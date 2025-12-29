@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    body {
+        @apply bg-message-ivory text-message-text antialiased min-h-screen flex flex-col items-center justify-center font-serif leading-relaxed overflow-x-hidden;
+        letter-spacing: -0.08em;
+    }
+}
