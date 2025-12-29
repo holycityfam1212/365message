@@ -18,7 +18,7 @@ import openSound from '../assets/sounds/open.mp3';
 const GachaMachine = ({ onFinish }) => {
     // 리렌더링 없는 상태 관리를 위해 useRef 사용
     const isDraggingRef = useRef(false);
-    
+
     const [hasCoin, setHasCoin] = useState(false);
     const [isSpinning, setIsSpinning] = useState(false);
     const [capsuleDropped, setCapsuleDropped] = useState(false);
@@ -41,7 +41,7 @@ const GachaMachine = ({ onFinish }) => {
     const handleSpin = () => {
         if (isSpinning) return;
         setIsSpinning(true);
-        
+
         // 핸들이 돌아가는 기계음
         playSound(crankSound, 0.5);
 
@@ -49,7 +49,7 @@ const GachaMachine = ({ onFinish }) => {
         setTimeout(() => {
             setIsSpinning(false);
             setCapsuleDropped(true);
-            
+
             // 캡슐이 떨어지는 소리
             playSound(dropSound, 0.6);
         }, 1500);
@@ -57,10 +57,10 @@ const GachaMachine = ({ onFinish }) => {
 
     const handleDragStart = useCallback((e) => {
         if (hasCoin || isSpinning || capsuleDropped) return;
-        
+
         // 중요: 드래그 시작 시 리렌더링을 유발하지 않음
         isDraggingRef.current = true;
-        
+
         // 터치 이벤트 스크롤 방지
         if (e.cancelable) e.preventDefault();
 
@@ -68,7 +68,7 @@ const GachaMachine = ({ onFinish }) => {
         const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
 
         const rect = coinRef.current.getBoundingClientRect();
-        
+
         dragStartPosRef.current = {
             offsetX: clientX - rect.left,
             offsetY: clientY - rect.top,
@@ -78,8 +78,8 @@ const GachaMachine = ({ onFinish }) => {
 
         if (coinRef.current) {
             // 드래그 중에는 애니메이션(transition)을 꺼야 즉각적으로 따라옵니다.
-            coinRef.current.style.transition = 'none'; 
-            
+            coinRef.current.style.transition = 'none';
+
             coinRef.current.style.willChange = 'transform';
             coinRef.current.style.position = 'fixed';
             coinRef.current.style.left = `${rect.left}px`;
@@ -94,7 +94,7 @@ const GachaMachine = ({ onFinish }) => {
 
     const handleDragMove = useCallback((e) => {
         if (!isDraggingRef.current) return;
-        
+
         if (e.cancelable) e.preventDefault();
 
         const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
@@ -105,7 +105,7 @@ const GachaMachine = ({ onFinish }) => {
             // 여기서는 직접 할당이 반응성이 더 좋을 수 있음
             const deltaX = clientX - dragStartPosRef.current.offsetX - dragStartPosRef.current.startLeft;
             const deltaY = clientY - dragStartPosRef.current.offsetY - dragStartPosRef.current.startTop;
-            
+
             // translate3d로 하드웨어 가속 강제
             coinRef.current.style.transform = `translate3d(${deltaX}px, ${deltaY}px, 0) scale(1.05)`;
         }
@@ -146,7 +146,7 @@ const GachaMachine = ({ onFinish }) => {
             if (coinRef.current) {
                 // 드래그가 끝나고 제자리로 돌아갈 때만 다시 애니메이션을 켭니다.
                 coinRef.current.style.transition = 'all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275)';
-                
+
                 coinRef.current.style.position = 'absolute';
                 coinRef.current.style.left = '50%';
                 coinRef.current.style.top = 'auto';
@@ -163,7 +163,7 @@ const GachaMachine = ({ onFinish }) => {
     useEffect(() => {
         // 비수동적(non-passive) 리스너로 설정하여 preventDefault() 호출 가능하게 함
         const options = { passive: false };
-        
+
         window.addEventListener('mousemove', handleDragMove, options);
         window.addEventListener('mouseup', handleDragEnd);
         window.addEventListener('touchmove', handleDragMove, options);
@@ -176,7 +176,7 @@ const GachaMachine = ({ onFinish }) => {
             window.removeEventListener('touchend', handleDragEnd);
         };
     }, [handleDragMove, handleDragEnd]);
-    
+
     // Pick a random verse
     const drawVerse = () => {
         return getRandomVerse();
@@ -186,13 +186,13 @@ const GachaMachine = ({ onFinish }) => {
 
     const handleCapsuleClick = async () => {
         if (!capsuleDropped) return;
-        
+
         // 캡슐이 열리며 말씀이 등장하는 소리
         playSound(openSound, 0.6);
-        
+
         // Open result
         const verse = drawVerse();
-        
+
         // 말씀 뽑기 추적 (Analytics)
         try {
             await supabase.from('analytics_actions').insert([{
@@ -203,19 +203,35 @@ const GachaMachine = ({ onFinish }) => {
         } catch (err) {
             console.error("Analytics tracking failed:", err);
         }
-        
+
         onFinish(verse);
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen relative w-full overflow-hidden bg-gradient-to-br from-blue-50/40 via-purple-50/30 to-pink-50/30">
+        <div className="flex flex-col items-center justify-between min-h-[100dvh] w-full overflow-y-auto bg-gradient-to-br from-purple-200/60 via-pink-200/50 via-blue-200/40 to-purple-100/50 py-8 relative">
+
+            {/* Floating Decorations */}
+            <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                {/* Stars */}
+                <div className="absolute top-[10%] left-[15%] w-3 h-3 bg-yellow-200/40 rounded-full blur-sm animate-sparkle" />
+                <div className="absolute top-[25%] right-[20%] w-2 h-2 bg-pink-300/30 rounded-full blur-sm animate-sparkle" style={{ animationDelay: '1s' }} />
+                <div className="absolute bottom-[20%] left-[30%] w-2.5 h-2.5 bg-purple-300/35 rounded-full blur-sm animate-sparkle" style={{ animationDelay: '2s' }} />
+
+                {/* Sparkles */}
+                <div className="absolute top-[40%] left-[25%] w-4 h-4 bg-purple-300/20 rounded-full blur-md animate-float" style={{ animationDelay: '0.5s' }} />
+                <div className="absolute top-[60%] right-[30%] w-3 h-3 bg-pink-200/25 rounded-full blur-md animate-float" style={{ animationDelay: '1.5s' }} />
+
+                {/* Orbs */}
+                <div className="absolute bottom-[30%] right-[15%] w-32 h-32 bg-gradient-to-br from-blue-200/20 to-purple-200/10 rounded-full blur-3xl animate-float" />
+                <div className="absolute top-[15%] left-[10%] w-24 h-24 bg-gradient-to-br from-pink-200/15 to-purple-100/10 rounded-full blur-3xl animate-float" style={{ animationDelay: '3s' }} />
+            </div>
 
             {/* Header / Logo Area */}
-            <div className="absolute top-12 text-center z-10 transition-all duration-700" 
-                 style={{ 
-                     opacity: isSpinning || capsuleDropped ? 0 : 1,
-                     transform: isSpinning || capsuleDropped ? 'translateY(-10px)' : 'translateY(0)'
-                 }}>
+            <div className="text-center z-10 transition-all duration-700 flex-shrink-0"
+                style={{
+                    opacity: isSpinning || capsuleDropped ? 0 : 1,
+                    transform: isSpinning || capsuleDropped ? 'translateY(-10px)' : 'translateY(0)'
+                }}>
                 <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-3 tracking-tight">
                     2026
                 </h1>
@@ -223,7 +239,7 @@ const GachaMachine = ({ onFinish }) => {
                 <p className="text-sm text-gray-400 mt-2 font-light">말씀대로 살아내는 한 해</p>
                 <div className="mt-8 inline-flex items-center gap-2 px-4 py-2 bg-white/70 backdrop-blur-sm rounded-full shadow-sm border border-purple-100/50">
                     <span className="w-2 h-2 bg-purple-300 rounded-full animate-pulse"></span>
-                    <p className="text-xs text-gray-500 font-medium">동전을 드래그해서 넣어보세요</p>
+                    <p className="text-xs text-gray-500 font medium">동전을 드래그해서 넣어보세요</p>
                 </div>
             </div>
 
@@ -233,7 +249,7 @@ const GachaMachine = ({ onFinish }) => {
             </div>
 
             {/* Machine Container - Width constrained */}
-            <div className="relative w-[320px] mt-16 flex flex-col items-center">
+            <div className="relative w-[320px] flex flex-col items-center flex-shrink-0 my-4">
 
                 {/* Drop Zone (Full Machine Area, Invisible) */}
                 <div
@@ -299,7 +315,7 @@ const GachaMachine = ({ onFinish }) => {
             </div>
 
             {/* Footer Text */}
-            <div className="absolute bottom-6 text-center z-10">
+            <div className="text-center z-10 flex-shrink-0">
                 <p className="text-gray-300 text-xs font-light tracking-wide">
                     Developed by <span className="font-medium text-gray-400">@ppaulcasso</span>
                 </p>

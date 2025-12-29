@@ -41,13 +41,13 @@ const DataUploader = () => {
     };
 
     return (
-        <div className="fixed top-4 left-4 z-50 bg-white p-4 rounded shadow-lg">
-            <h3 className="font-bold mb-2">Admin: Data Setup</h3>
+        <div className="fixed top-2 left-2 sm:top-4 sm:left-4 z-50 bg-white p-3 sm:p-4 rounded shadow-lg max-w-[calc(100vw-1rem)] sm:max-w-sm">
+            <h3 className="font-bold mb-2 text-sm sm:text-base">Admin: Data Setup</h3>
             <p className="mb-4 text-sm">{status}</p>
             <button
                 onClick={handleUpload}
                 disabled={isLoading}
-                className="bg-blue-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                className="bg-blue-500 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded disabled:opacity-50 text-sm sm:text-base"
             >
                 {isLoading ? 'Uploading...' : 'Upload Verses to DB'}
             </button>

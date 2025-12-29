@@ -68,25 +68,25 @@ const AdminDashboard = () => {
     if (isLoading) return <div className="text-white p-8">Loading stats...</div>;
 
     return (
-        <div className="fixed inset-0 z-50 bg-stone-900 text-white p-8 overflow-auto">
-            <h1 className="text-3xl font-bold mb-8 text-yellow-500">Admin Dashboard</h1>
+        <div className="fixed inset-0 z-50 bg-stone-900 text-white p-4 sm:p-6 md:p-8 overflow-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold mb-8 text-yellow-500">Admin Dashboard</h1>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-                <div className="bg-stone-800 p-6 rounded-xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 mb-12">
+                <div className="bg-stone-800 p-4 sm:p-6 rounded-xl">
                     <h3 className="text-gray-400 text-sm uppercase">Total Visits</h3>
-                    <p className="text-4xl font-bold">{stats.totalVisits.toLocaleString()}</p>
+                    <p className="text-3xl sm:text-4xl font-bold">{stats.totalVisits.toLocaleString()}</p>
                 </div>
-                <div className="bg-stone-800 p-6 rounded-xl">
+                <div className="bg-stone-800 p-4 sm:p-6 rounded-xl">
                     <h3 className="text-gray-400 text-sm uppercase">Total Draws</h3>
-                    <p className="text-4xl font-bold text-blue-400">{stats.totalDraws.toLocaleString()}</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-blue-400">{stats.totalDraws.toLocaleString()}</p>
                 </div>
-                <div className="bg-stone-800 p-6 rounded-xl">
+                <div className="bg-stone-800 p-4 sm:p-6 rounded-xl">
                     <h3 className="text-gray-400 text-sm uppercase">Total Shares</h3>
-                    <p className="text-4xl font-bold text-pink-400">{stats.totalShares.toLocaleString()}</p>
+                    <p className="text-3xl sm:text-4xl font-bold text-pink-400">{stats.totalShares.toLocaleString()}</p>
                 </div>
             </div>
 
-            <div className="bg-stone-800 p-8 rounded-xl max-w-2xl">
+            <div className="bg-stone-800 p-4 sm:p-6 md:p-8 rounded-xl max-w-full sm:max-w-2xl">
                 <h3 className="text-xl font-bold mb-6 border-b border-gray-700 pb-2">Most Popular Themes</h3>
                 <ul>
                     {stats.topThemes.map(([theme, count], idx) => (

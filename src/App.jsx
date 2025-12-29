@@ -72,7 +72,7 @@ function App() {
   if (isDashboard) return <AdminDashboard />;
 
   return (
-    <div className="w-full min-h-screen bg-message-ivory overflow-hidden">
+    <div className="w-full min-h-[100dvh] bg-message-ivory overflow-hidden">
       {/* Admin Data Tool */}
       {isAdmin && <DataUploader />}
 

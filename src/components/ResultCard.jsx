@@ -20,10 +20,10 @@ const THEME_STYLES = {
 
 const ResultCard = ({ verse, onRestart }) => {
     const cardRef = useRef(null);
-    
+
     // Derived state instead of useEffect sync
-    const themeStyle = (verse && verse.theme && THEME_STYLES[verse.theme]) 
-        ? THEME_STYLES[verse.theme] 
+    const themeStyle = (verse && verse.theme && THEME_STYLES[verse.theme])
+        ? THEME_STYLES[verse.theme]
         : THEME_STYLES['default'];
 
     const handleDownload = async () => {
@@ -81,12 +81,12 @@ const ResultCard = ({ verse, onRestart }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen w-full bg-gradient-to-br from-slate-800/60 via-purple-800/30 to-pink-800/30 backdrop-blur-md p-4 animate-fade-in fixed inset-0 z-50">
+        <div className="flex flex-col items-center justify-start min-h-[100dvh] w-full bg-gradient-to-br from-slate-800/60 via-purple-800/30 to-pink-800/30 backdrop-blur-md p-4 sm:p-6 animate-fade-in fixed inset-0 z-50 overflow-y-auto">
 
             {/* Action Buttons Top */}
             <div className="w-full max-w-[340px] flex justify-end mb-4">
-                <button 
-                    onClick={onRestart} 
+                <button
+                    onClick={onRestart}
                     className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-110 shadow-lg"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
@@ -98,26 +98,24 @@ const ResultCard = ({ verse, onRestart }) => {
             {/* Card Area to capture */}
             <div
                 ref={cardRef}
-                className="relative flex items-center justify-center w-[340px] h-[540px] shadow-2xl hover:shadow-3xl overflow-hidden rounded-2xl bg-gradient-to-br from-[#FDFCF0] to-[#FFF9E8] transition-all duration-300 border border-white/50"
+                className="relative flex items-center justify-center w-[340px] h-[540px] flex-shrink-0 shadow-2xl hover:shadow-3xl overflow-hidden rounded-3xl bg-white/30 backdrop-blur-xl border border-white/40 transition-all duration-300"
             >
-                {/* Background Texture */}
-                <img src={paperBg} alt="Paper Background" className="absolute inset-0 w-full h-full object-cover opacity-50 z-0" />
-                
-                {/* Subtle gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/30 via-transparent to-purple-50/20 z-0"></div>
+                {/* Glassmorphism glow */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-purple-100/10 to-pink-100/10 rounded-3xl" />
+                <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl" />
 
                 <div className="relative z-20 px-8 py-10 text-center flex flex-col items-center justify-center h-full w-full">
 
                     {/* Theme Badge */}
                     <div className="mb-4">
-                        <h3 className="text-sm font-bold font-serif" style={{ color: themeStyle.color }}>
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider" style={{ color: themeStyle.color }}>
                             {themeStyle.label}
                         </h3>
                     </div>
 
                     {/* Main Verse */}
                     <div className="mb-4 w-full px-4">
-                        <p className="text-[#2D2D2D] font-serif text-lg break-keep whitespace-pre-wrap font-medium" style={{ letterSpacing: '-0.08em', lineHeight: '1.5' }}>
+                        <p className="text-xl font-semibold break-keep whitespace-pre-wrap leading-relaxed drop-shadow-sm" style={{ letterSpacing: '-0.08em', color: '#2D2D2D' }}>
                             <span className="text-xl font-bold opacity-40">"</span>
                             {verse.text}
                             <span className="text-xl font-bold opacity-40">"</span>
@@ -126,7 +124,7 @@ const ResultCard = ({ verse, onRestart }) => {
 
                     {/* Reference */}
                     <div>
-                        <p className="font-bold text-sm font-serif" style={{ color: themeStyle.color }}>
+                        <p className="text-base font-extrabold" style={{ color: themeStyle.color }}>
                             {verse.reference}
                         </p>
                     </div>

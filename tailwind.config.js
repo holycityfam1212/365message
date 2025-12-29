@@ -27,10 +27,20 @@ export default {
                     '0%': { transform: 'translateY(-100%)', opacity: '0' },
                     '100%': { transform: 'translateY(0)', opacity: '1' },
                 },
+                float: {
+                    '0%, 100%': { transform: 'translateY(0px)' },
+                    '50%': { transform: 'translateY(-20px)' },
+                },
+                sparkle: {
+                    '0%, 100%': { opacity: '0.2', transform: 'scale(1)' },
+                    '50%': { opacity: '0.8', transform: 'scale(1.2)' },
+                }
             },
             animation: {
                 shake: 'shake 0.5s ease-in-out infinite',
                 drop: 'drop 0.5s ease-out forwards',
+                float: 'float 6s ease-in-out infinite',
+                sparkle: 'sparkle 3s ease-in-out infinite',
             }
         },
     },
