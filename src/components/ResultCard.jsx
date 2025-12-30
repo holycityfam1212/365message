@@ -98,12 +98,14 @@ const ResultCard = ({ verse, onRestart }) => {
             {/* Card Area to capture */}
             <div
                 ref={cardRef}
-                className="relative flex items-center justify-center w-[340px] h-[540px] flex-shrink-0 shadow-2xl hover:shadow-3xl overflow-hidden rounded-3xl bg-white/30 backdrop-blur-xl border border-white/40 transition-all duration-300"
+                className="relative flex items-center justify-center w-[340px] h-[540px] flex-shrink-0 shadow-2xl hover:shadow-3xl overflow-hidden transition-all duration-300"
+                style={{
+                    backgroundImage: 'url(/card-background.png)',
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    backgroundRepeat: 'no-repeat'
+                }}
             >
-                {/* Glassmorphism glow */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-purple-100/10 to-pink-100/10 rounded-3xl" />
-                <div className="absolute inset-0 bg-white/5 backdrop-blur-3xl" />
-
                 <div className="relative z-20 px-8 py-10 text-center flex flex-col items-center justify-center h-full w-full">
 
                     {/* Theme Badge */}
