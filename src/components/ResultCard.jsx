@@ -3,19 +3,33 @@ import html2canvas from 'html2canvas';
 import { supabase } from '../lib/supabase';
 
 // Assets
-import paperBg from '../assets/paper_bg.png';
+import bg1 from '../assets/theme_bgs/bg_1.png'; // Pale Pink? -> Love
+import bg2 from '../assets/theme_bgs/bg_2.png'; // Lavender? -> Wisdom
+import bg3 from '../assets/theme_bgs/bg_3.png'; // Warm Yellow? -> Blessing
+import bg4 from '../assets/theme_bgs/bg_4.png'; // Soft Mint? -> Hope
+import bg5 from '../assets/theme_bgs/bg_5.png'; // Dusty Blue? -> Comfort
 
 const THEME_STYLES = {
-    'blessing': { color: '#F59E0B', bg: 'bg-orange-50', label: '축복과 형통' },
-    'comfort': { color: '#10B981', bg: 'bg-green-50', label: '위로와 평안' },
-    'strength': { color: '#3B82F6', bg: 'bg-blue-50', label: '능력과 용기' },
-    'wisdom': { color: '#8B5CF6', bg: 'bg-purple-50', label: '지혜와 인도' },
-    'hope': { color: '#06B6D4', bg: 'bg-cyan-50', label: '소망과 미래' },
-    'love': { color: '#EC4899', bg: 'bg-pink-50', label: '사랑과 섬김' },
-    'faith': { color: '#6366F1', bg: 'bg-indigo-50', label: '믿음과 헌신' },
-    'joy': { color: '#F59E0B', bg: 'bg-amber-50', label: '감사와 기쁨' },
+    // 0: Pinkish -> Love
+    'love': { color: '#881337', bg: 'bg-pink-50', label: '사랑과 섬김', bgImg: bg1 },
+
+    // 1: Purple/Lavender -> Wisdom, Faith
+    'wisdom': { color: '#4C1D95', bg: 'bg-purple-50', label: '지혜와 인도', bgImg: bg2 },
+    'faith': { color: '#4338CA', bg: 'bg-indigo-50', label: '믿음과 헌신', bgImg: bg2 },
+
+    // 2: Yellow/Cream -> Blessing, Joy
+    'blessing': { color: '#78350F', bg: 'bg-orange-50', label: '축복과 형통', bgImg: bg3 },
+    'joy': { color: '#78350F', bg: 'bg-amber-50', label: '감사와 기쁨', bgImg: bg3 },
+
+    // 3: Green/Mint -> Hope, Strength (maybe?)
+    'hope': { color: '#134E4A', bg: 'bg-cyan-50', label: '소망과 미래', bgImg: bg4 },
+    'strength': { color: '#0F766E', bg: 'bg-blue-50', label: '능력과 용기', bgImg: bg4 },
+
+    // 4: Blue -> Comfort
+    'comfort': { color: '#1E3A8A', bg: 'bg-green-50', label: '위로와 평안', bgImg: bg5 },
+
     // Fallback
-    'default': { color: '#9CA3AF', bg: 'bg-gray-50', label: '나의 말씀' }
+    'default': { color: '#1F2937', bg: 'bg-gray-50', label: '나의 말씀', bgImg: bg5 }
 };
 
 const ResultCard = ({ verse, onRestart }) => {
@@ -47,8 +61,6 @@ const ResultCard = ({ verse, onRestart }) => {
     };
 
     const handleShare = async () => {
-        const url = window.location.href;
-
         // Track Share
         try {
             await supabase.from('analytics_actions').insert([{
@@ -60,6 +72,48 @@ const ResultCard = ({ verse, onRestart }) => {
             console.error("Tracking Failed", err);
         }
 
+        if (!cardRef.current) return;
+
+        try {
+            const canvas = await html2canvas(cardRef.current, {
+                scale: 3,
+                backgroundColor: null,
+                logging: false,
+                useCORS: true,
+            });
+
+            canvas.toBlob(async (blob) => {
+                if (!blob) return;
+
+                const file = new File([blob], `2026_Gods_Message_${verse.theme}.png`, { type: 'image/png' });
+                const shareData = {
+                    files: [file],
+                    title: '2026 내게 주시는 하나님의 말씀',
+                    text: `[${verse.reference}] ${verse.text}`,
+                };
+
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share(shareData);
+                    } catch (err) {
+                        if (err.name !== 'AbortError') {
+                            console.log('Error sharing file:', err);
+                            shareLink(); // Fallback
+                        }
+                    }
+                } else {
+                    shareLink(); // Fallback
+                }
+            }, 'image/png');
+
+        } catch (err) {
+            console.error("Share generation failed", err);
+            shareLink();
+        }
+    };
+
+    const shareLink = async () => {
+        const url = window.location.href;
         const shareData = {
             title: '2026 내게 주시는 하나님의 말씀',
             text: `[${verse.reference}] ${verse.text}\n\n말씀 카드 확인하기:`,
@@ -70,10 +124,9 @@ const ResultCard = ({ verse, onRestart }) => {
             try {
                 await navigator.share(shareData);
             } catch (err) {
-                console.log('Share canceled or failed:', err);
+                console.log('Link share canceled or failed:', err);
             }
         } else {
-            // Fallback
             navigator.clipboard.writeText(url).then(() => {
                 alert("링크가 복사되었습니다! 친구들과 말씀을 나누어보세요.");
             });
@@ -81,13 +134,16 @@ const ResultCard = ({ verse, onRestart }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-start min-h-[100dvh] w-full bg-gradient-to-br from-slate-800/60 via-purple-800/30 to-pink-800/30 backdrop-blur-md p-4 sm:p-6 animate-fade-in fixed inset-0 z-50 overflow-y-auto">
+        <div
+            className="w-full min-h-[100dvh] flex flex-col items-center justify-start p-4 sm:p-6 animate-fade-in z-50 bg-cover bg-center"
+            style={{ backgroundImage: `url(${themeStyle.bgImg})` }}
+        >
 
             {/* Action Buttons Top */}
             <div className="w-full max-w-[340px] flex justify-end mb-4">
                 <button
                     onClick={onRestart}
-                    className="bg-white/10 hover:bg-white/20 text-white rounded-full p-2.5 backdrop-blur-sm border border-white/20 transition-all duration-300 hover:scale-110 shadow-lg"
+                    className="bg-black/5 hover:bg-black/10 text-gray-600 rounded-full p-2.5 backdrop-blur-sm border border-black/5 transition-all duration-300 hover:scale-110 shadow-sm"
                 >
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-5 h-5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -98,7 +154,7 @@ const ResultCard = ({ verse, onRestart }) => {
             {/* Card Area to capture */}
             <div
                 ref={cardRef}
-                className="relative flex items-center justify-center w-[340px] h-[540px] flex-shrink-0 shadow-2xl hover:shadow-3xl overflow-hidden transition-all duration-300"
+                className="relative flex items-center justify-center w-full max-w-[340px] aspect-[17/27] flex-shrink-0 shadow-2xl hover:shadow-3xl overflow-hidden transition-all duration-300"
                 style={{
                     backgroundImage: 'url(/card-background.png)',
                     backgroundSize: 'cover',
@@ -117,7 +173,7 @@ const ResultCard = ({ verse, onRestart }) => {
 
                     {/* Main Verse */}
                     <div className="mb-4 w-full px-4">
-                        <p className="text-xl font-semibold break-keep whitespace-pre-wrap leading-relaxed drop-shadow-sm" style={{ letterSpacing: '-0.08em', color: '#2D2D2D' }}>
+                        <p className="text-xl font-semibold break-keep whitespace-pre-wrap leading-relaxed drop-shadow-sm" style={{ letterSpacing: '-0.08em', color: themeStyle.color }}>
                             {verse.text}
                         </p>
                     </div>
@@ -171,9 +227,9 @@ const ResultCard = ({ verse, onRestart }) => {
             </div>
 
             <div className="mt-6 text-center">
-                <p className="text-white/50 text-xs mb-2">하루 한 번, 뽑은 말씀대로 살아보기</p>
-                <p className="text-white/30 text-xs font-light">
-                    Developed by <span className="font-medium text-white/40">@ppaulcasso</span>
+                <p className="text-gray-500 text-xs mb-2">하루 한 번, 뽑은 말씀대로 살아보기</p>
+                <p className="text-gray-400 text-xs font-light">
+                    Developed by <span className="font-medium text-gray-500">@ppaulcasso</span>
                 </p>
             </div>
 

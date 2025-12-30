@@ -208,7 +208,7 @@ const GachaMachine = ({ onFinish }) => {
     };
 
     return (
-        <div className="flex flex-col items-center justify-between min-h-[100dvh] w-full overflow-y-auto bg-gradient-to-br from-purple-200/60 via-pink-200/50 via-blue-200/40 to-purple-100/50 py-8 relative">
+        <div className="w-full min-h-[100dvh] flex flex-col items-center justify-between bg-gradient-to-br from-purple-200/60 via-pink-200/50 via-blue-200/40 to-purple-100/50 py-8 relative overflow-hidden">
 
             {/* Floating Decorations */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -249,7 +249,7 @@ const GachaMachine = ({ onFinish }) => {
             </div>
 
             {/* Machine Container - Width constrained */}
-            <div className="relative w-[320px] flex flex-col items-center flex-shrink-0 my-4">
+            <div className="relative w-[320px] flex flex-col items-center flex-shrink-0 mt-4 mb-28">
 
                 {/* Drop Zone (Full Machine Area, Invisible) */}
                 <div
