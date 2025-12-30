@@ -6,7 +6,7 @@ import { supabase } from '../lib/supabase';
 import paperBg from '../assets/paper_bg.png';
 
 const THEME_STYLES = {
-    'blessing': { color: '#F59E0B', bg: 'bg-orange-50', label: '축복과 소망' },
+    'blessing': { color: '#F59E0B', bg: 'bg-orange-50', label: '축복과 형통' },
     'comfort': { color: '#10B981', bg: 'bg-green-50', label: '위로와 평안' },
     'strength': { color: '#3B82F6', bg: 'bg-blue-50', label: '능력과 용기' },
     'wisdom': { color: '#8B5CF6', bg: 'bg-purple-50', label: '지혜와 인도' },
@@ -118,9 +118,7 @@ const ResultCard = ({ verse, onRestart }) => {
                     {/* Main Verse */}
                     <div className="mb-4 w-full px-4">
                         <p className="text-xl font-semibold break-keep whitespace-pre-wrap leading-relaxed drop-shadow-sm" style={{ letterSpacing: '-0.08em', color: '#2D2D2D' }}>
-                            <span className="text-xl font-bold opacity-40">"</span>
                             {verse.text}
-                            <span className="text-xl font-bold opacity-40">"</span>
                         </p>
                     </div>
 

@@ -1,6 +1,6 @@
 export const verses = [
     // 1. 축복과 소망 (Blessing & Hope)
-    { id: 1, theme: 'blessing', text: '여호와는 네게 복을 주시고 너를 지키시기를 원하며, 여호와는 그의 얼굴을 네게 비추사 은혜 베푸시기를 원하며', reference: '민수기 6:24-25' },
+    { id: 1, theme: 'blessing', text: '그러나 무릇 여호와를 의지하며 여호와를 의뢰하는 그 사람은 복을 받을 것이라', reference: '예레미야 17:7' },
     { id: 2, theme: 'blessing', text: '너의 행사를 여호와께 맡기라 그리하면 네가 경영하는 것이 이루어지리라', reference: '잠언 16:3' },
     { id: 3, theme: 'blessing', text: '그는 시냇가에 심은 나무가 철을 따라 열매를 맺으며 그 잎사귀가 마르지 아니함 같으니 그가 하는 모든 일이 다 형통하리로다', reference: '시편 1:3' },
     { id: 4, theme: 'blessing', text: '내가 너로 큰 민족을 이루고 네게 복을 주어 네 이름을 창대하게 하리니 너는 복이 될지라', reference: '창세기 12:2' },
@@ -19,7 +19,7 @@ export const verses = [
     // 2. 위로와 평안 (Comfort & Peace)
     { id: 16, theme: 'comfort', text: '수고하고 무거운 짐 진 자들아 다 내게로 오라 내가 너희를 쉬게 하리라', reference: '마태복음 11:28' },
     { id: 17, theme: 'comfort', text: '평안을 너희에게 끼치노니 곧 나의 평안을 너희에게 주노라', reference: '요한복음 14:27' },
-    { id: 18, theme: 'comfort', text: '두려워하지 말라 내가 너와 함께 함이라 놀라지 말라 나는 네 하나님이 됨이라', reference: '이사야 41:10' },
+    { id: 18, theme: 'comfort', text: '이것을 너희에게 이르는 것은 너희로 내 안에서 평안을 누리게 하려 함이라 세상에서는 너희가 환난을 당하나 담대하라 내가 세상을 이기었노라', reference: '요한복음 16:33' },
     { id: 19, theme: 'comfort', text: '여호와는 나의 목자시니 내게 부족함이 없으리로다', reference: '시편 23:1' },
     { id: 20, theme: 'comfort', text: '너희 염려를 다 주께 맡기라 이는 그가 너희를 돌보심이라', reference: '베드로전서 5:7' },
     { id: 21, theme: 'comfort', text: '아무것도 염려하지 말고 다만 모든 일에 기도와 간구로 하나님께 아뢰라 그리하면 모든 지각에 뛰어난 하나님의 평강이 그리스도 예수 안에서 너희 마음과 생각을 지키시리라', reference: '빌립보서 4:6-7' },
@@ -35,18 +35,18 @@ export const verses = [
 
     // 3. 능력과 용기 (Strength & Courage)
     { id: 31, theme: 'strength', text: '내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라', reference: '빌립보서 4:13' },
-    { id: 32, theme: 'strength', text: '강하고 담대하라 두려워하지 말며 놀라지 말라 네가 어디로 가든지 네 하나님 여호와가 너와 함께 하느니라', reference: '여호수아 1:9' },
+    { id: 32, theme: 'strength', text: '그의 영광의 풍성함을 따라 그의 성령으로 말미암아 너희 속사람을 능력으로 강건하게 하시오며', reference: '에베소서 3:16' },
     { id: 33, theme: 'strength', text: '오직 여호와를 앙망하는 자는 새 힘을 얻으리니 독수리가 날개 치며 올라감 같을 것이요', reference: '이사야 40:31' },
     { id: 34, theme: 'strength', text: '하나님이 우리에게 주신 것은 두려워하는 마음이 아니요 오직 능력과 사랑과 절제하는 마음이니', reference: '디모데후서 1:7' },
     { id: 35, theme: 'strength', text: '끝으로 너희가 주 안에서와 그 힘의 능력으로 강건하여지고', reference: '에베소서 6:10' },
     { id: 36, theme: 'strength', text: '내 능력이 약한 데서 온전하여짐이라', reference: '고린도후서 12:9' },
     { id: 37, theme: 'strength', text: '나의 힘이신 여호와여 내가 주를 사랑하나이다', reference: '시편 18:1' },
     { id: 38, theme: 'strength', text: '내가 간구하는 날에 주께서 응답하시고 내 영혼에 힘을 주어 나를 담대하게 하셨나이다', reference: '시편 138:3' },
-    { id: 39, theme: 'strength', text: '여호와는 나의 힘과 나의 방패시니 내 마음이 그를 의지하여 도움을 얻었도다', reference: '시편 28:7' },
+    { id: 39, theme: 'strength', text: '너는 여호와를 기다릴지어다 강하고 담대하며 여호와를 기다릴지어다', reference: '시편 27:14' },
     { id: 40, theme: 'strength', text: '여호와로 인하여 기뻐하는 것이 너희의 힘이니라', reference: '느헤미야 8:10' },
     { id: 41, theme: 'strength', text: '오직 나는 여호와의 영으로 말미암아 능력과 정의와 용기로 충만해져서', reference: '미가 3:8' },
-    { id: 42, theme: 'strength', text: '이는 힘으로 되지 아니하며 능력으로 되지 아니하고 오직 나의 영으로 되느니라', reference: '스가랴 4:6' },
-    { id: 43, theme: 'strength', text: '보라 하나님은 나의 구원이시라 내가 신뢰하고 두려움이 없으리니 주 여호와는 나의 힘이시며 나의 노래시며 나의 구원이심이라', reference: '이사야 12:2' },
+    { id: 42, theme: 'strength', text: '그의 영광의 힘을 따라 모든 능력으로 능하게 하시며 기쁨으로 모든 견딤과 오래 참음에 이르게 하시고', reference: '골로새서 1:11' },
+    { id: 43, theme: 'strength', text: '여호와는 내 편이시라 내가 두려워하지 아니하리니 사람이 내게 어찌할까', reference: '시편 118:6' },
     { id: 44, theme: 'strength', text: '여호와는 나의 빛이요 나의 구원이시니 내가 누구를 두려워하리요', reference: '시편 27:1' },
     { id: 45, theme: 'strength', text: '여호와를 바라는 너희들아 강하고 담대하라', reference: '시편 31:24' },
 
@@ -55,7 +55,7 @@ export const verses = [
     { id: 47, theme: 'wisdom', text: '너는 마음을 다하여 여호와를 신뢰하고 네 명철을 의지하지 말라', reference: '잠언 3:5' },
     { id: 48, theme: 'wisdom', text: '너는 범사에 그를 인정하라 그리하면 네 길을 지도하시리라', reference: '잠언 3:6' },
     { id: 49, theme: 'wisdom', text: '주의 말씀은 내 발에 등이요 내 길에 빛이니이다', reference: '시편 119:105' },
-    { id: 50, theme: 'wisdom', text: '여호와를 경외하는 것이 지식의 근본이거늘 / (잠언 1:7)', reference: '잠언 1:7' },
+    { id: 50, theme: 'wisdom', text: '여호와를 경외하는 것이 지식의 근본이거늘', reference: '잠언 1:7' },
     { id: 51, theme: 'wisdom', text: '여호와를 경외하는 것이 지혜의 근본이요 거룩하신 자를 아는 것이 명철이니라', reference: '잠언 9:10' },
     { id: 52, theme: 'wisdom', text: '내가 네 갈 길을 가르쳐 보이고 너를 주목하여 훈계하리로다', reference: '시편 32:8' },
     { id: 53, theme: 'wisdom', text: '여호와가 너를 항상 인도하여 메마른 곳에서도 네 영혼을 만족하게 하며', reference: '이사야 58:11' },
@@ -68,7 +68,7 @@ export const verses = [
     { id: 60, theme: 'wisdom', text: '주의 영은 선하시니 나를 공평한 땅에 인도하소서', reference: '시편 143:10' },
 
     // 5. 소망과 미래 (Hope & Future)
-    { id: 61, theme: 'hope', text: '너희를 향한 나의 생각을 내가 아나니 평안이요 재앙이 아니니라 너희에게 미래와 희망을 주는 것이니라', reference: '예레미야 29:11' },
+    { id: 61, theme: 'hope', text: '여호와의 말씀이니라 너희를 향한 나의 생각을 내가 아나니 평안이요 재앙이 아니니라 너희에게 미래와 희망을 주는 것이니라', reference: '예레미야 29:11' },
     { id: 62, theme: 'hope', text: '소망의 하나님이 모든 기쁨과 평강을 믿음 안에서 너희에게 충만하게 하사', reference: '로마서 15:13' },
     { id: 63, theme: 'hope', text: '소망이 우리를 부끄럽게 하지 아니함은 우리에게 주신 성령으로 말미암아 하나님의 사랑이 우리 마음에 부은 바 됨이니', reference: '로마서 5:5' },
     { id: 64, theme: 'hope', text: '믿음은 바라는 것들의 실상이요 보이지 않는 것들의 증거니', reference: '히브리서 11:1' },
@@ -105,8 +105,8 @@ export const verses = [
     { id: 91, theme: 'faith', text: '믿음의 주요 또 온전하게 하시는 이인 예수를 바라보자', reference: '히브리서 12:2' },
     { id: 92, theme: 'faith', text: '오직 의인은 믿음으로 말미암아 살리라 함과 같으니라', reference: '로마서 1:17' },
     { id: 93, theme: 'faith', text: '이는 우리가 믿음으로 행하고 보는 것으로 행하지 아니함이로라', reference: '고린도후서 5:7' },
-    { id: 94, theme: 'faith', text: '지극히 작은 자 하나에게 한 것이 곧 내게 한 것이니라', reference: '마태복음 25:40' },
-    { id: 95, theme: 'faith', text: '할 수 있거든이 무슨 말이냐 믿는 자에게는 능히 하지 못할 일이 없느니라', reference: '마가복음 9:23' },
+    { id: 94, theme: 'faith', text: '우리가 알거니와 하나님을 사랑하는 자 곧 그의 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라', reference: '로마서 8:28' },
+    { id: 95, theme: 'faith', text: '예수께서 이르시되 할 수 있거든이 무슨 말이냐 믿는 자에게는 능히 하지 못할 일이 없느니라 하시니', reference: '마가복음 9:23' },
     { id: 96, theme: 'faith', text: '우리는 그가 만드신 바라 그리스도 예수 안에서 선한 일을 위하여 지으심을 받은 자니', reference: '에베소서 2:10' },
     { id: 97, theme: 'faith', text: '너희는 그 은혜에 의하여 믿음으로 말미암아 구원을 받았으니', reference: '에베소서 2:8' },
     { id: 98, theme: 'faith', text: '믿음이 없이는 하나님을 기쁘시게 하지 못하나니', reference: '히브리서 11:6' },
@@ -141,7 +141,7 @@ export const verses = [
     { id: 125, theme: 'joy', text: '할렐루야 우리 하나님을 찬양하는 일이 선함이여 찬송하는 일이 아름답고 마땅하도다', reference: '시편 147:1' },
     { id: 126, theme: 'joy', text: '주께서 생명의 길을 내게 보이시리니 주의 앞에는 충만한 기쁨이 있고', reference: '시편 16:11' },
     { id: 127, theme: 'joy', text: '내가 이것을 너희에게 이름은 내 기쁨이 너희 안에 있어 너희 기쁨을 충만하게 하려 함이라', reference: '요한복음 15:11' },
-    { id: 128, theme: 'joy', text: '여호와는 나의 힘과 나의 방패시니 내 마음이 그를 의지하여 도움을 얻었도다 그러므로 내 마음이 크게 기뻐하며 내 노래로 그를 찬송하리로다', reference: '시편 28:7' },
+    { id: 128, theme: 'joy', text: '이에 예수께서 제자들에게 이르시되 누구든지 나를 따라오려거든 자기를 부인하고 자기 십자가를 지고 나를 따를 것이니라', reference: '마태복음 16:24' },
     { id: 129, theme: 'joy', text: '너희는 이 세대를 본받지 말고 오직 마음을 새롭게 함으로 변화를 받아 하나님의 선하시고 기뻐하시고 온전하신 뜻이 무엇인지 분별하도록 하라', reference: '로마서 12:2' },
     { id: 130, theme: 'joy', text: '주께서 나의 슬픔이 변하여 내게 춤이 되게 하시며 나의 베옷을 벗기고 기쁨으로 띠 띠우셨나이다', reference: '시편 30:11' },
 ];
