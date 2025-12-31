@@ -45,10 +45,11 @@ const ResultCard = ({ verse, onRestart }) => {
         if (cardRef.current) {
             try {
                 const canvas = await html2canvas(cardRef.current, {
-                    scale: 3, // Higher quality
+                    scale: 5, // Higher quality for sharp images
                     backgroundColor: null,
                     logging: false,
                     useCORS: true,
+                    pixelRatio: window.devicePixelRatio,
                 });
                 const link = document.createElement('a');
                 link.download = `2026_Gods_Message_${verse.theme}.png`;
@@ -77,10 +78,11 @@ const ResultCard = ({ verse, onRestart }) => {
 
         try {
             const canvas = await html2canvas(cardRef.current, {
-                scale: 3,
+                scale: 5,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
+                pixelRatio: window.devicePixelRatio,
             });
 
             canvas.toBlob(async (blob) => {
@@ -90,7 +92,6 @@ const ResultCard = ({ verse, onRestart }) => {
                 const shareData = {
                     files: [file],
                     title: '2026 내게 주시는 하나님의 말씀',
-                    text: `[${verse.reference}] ${verse.text}`,
                 };
 
                 if (navigator.canShare && navigator.canShare({ files: [file] })) {
