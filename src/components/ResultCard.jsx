@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from 'react';
+import html2canvas from 'html2canvas';
 import { supabase } from '../lib/supabase';
 
 // Assets
@@ -40,89 +41,29 @@ const ResultCard = ({ verse, onRestart }) => {
         ? THEME_STYLES[verse.theme]
         : THEME_STYLES['default'];
 
-    // Helper: Draw multiline text with proper wrapping
-    const drawMultilineText = (ctx, text, x, y, maxWidth, lineHeight) => {
-        const words = text.split(' ');
-        let line = '';
-        let lines = [];
-
-        for (let word of words) {
-            const testLine = line + word + ' ';
-            const metrics = ctx.measureText(testLine);
-
-            if (metrics.width > maxWidth && line !== '') {
-                lines.push(line.trim());
-                line = word + ' ';
-            } else {
-                line = testLine;
-            }
-        }
-        lines.push(line.trim());
-
-        // Center the text block vertically
-        const totalHeight = lines.length * lineHeight;
-        let currentY = y - (totalHeight / 2) + (lineHeight / 2);
-
-        lines.forEach(line => {
-            ctx.fillText(line, x, currentY);
-            currentY += lineHeight;
-        });
-    };
-
-    // Generate card image using Canvas API
-    const generateCardImage = async () => {
-        return new Promise((resolve, reject) => {
-            const canvas = document.createElement('canvas');
-            canvas.width = 1020;
-            canvas.height = 1620;
-            const ctx = canvas.getContext('2d');
-
-            // Load card frame image
-            const frameImg = new Image();
-            frameImg.crossOrigin = 'anonymous';
-            frameImg.onload = () => {
-                try {
-                    // Draw card frame
-                    ctx.drawImage(frameImg, 0, 0, 1020, 1620);
-
-                    // Setup text rendering
-                    ctx.textAlign = 'center';
-                    ctx.textBaseline = 'middle';
-                    ctx.fillStyle = themeStyle.color;
-
-                    // Draw theme badge
-                    ctx.font = "bold 33px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-                    ctx.letterSpacing = '0.1em';
-                    ctx.globalAlpha = 0.9;
-                    ctx.fillText(themeStyle.label.toUpperCase(), 510, 380);
-                    ctx.globalAlpha = 1.0;
-
-                    // Draw verse text (with wrapping)
-                    ctx.font = "500 48px 'Noto Serif KR', serif";
-                    drawMultilineText(ctx, verse.text, 510, 810, 732, 72);
-
-                    // Draw reference
-                    ctx.font = "bold 42px -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
-                    ctx.globalAlpha = 0.85;
-                    ctx.fillText(verse.reference, 510, 1380);
-
-                    resolve(canvas);
-                } catch (err) {
-                    reject(err);
-                }
-            };
-            frameImg.onerror = () => reject(new Error('Failed to load card frame'));
-            frameImg.src = cardFrame;
-        });
-    };
+    // Generate card image using html2canvas
 
     const handleDownload = async () => {
+        if (!cardRef.current) return;
+
         try {
-            const canvas = await generateCardImage();
+            // Wait for fonts to be ready
+            await document.fonts.ready;
+
+            // Small delay to ensure everything is rendered
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const canvas = await html2canvas(cardRef.current, {
+                scale: 3,
+                backgroundColor: null,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+            });
 
             const link = document.createElement('a');
             link.download = `2026_Gods_Message_${verse.theme}.png`;
-            link.href = canvas.toDataURL('image/png');
+            link.href = canvas.toDataURL('image/png', 1.0);
             link.click();
         } catch (err) {
             console.error("Failed to generate image", err);
@@ -142,8 +83,22 @@ const ResultCard = ({ verse, onRestart }) => {
             console.error("Tracking Failed", err);
         }
 
+        if (!cardRef.current) return;
+
         try {
-            const canvas = await generateCardImage();
+            // Wait for fonts to be ready
+            await document.fonts.ready;
+
+            // Small delay to ensure everything is rendered
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            const canvas = await html2canvas(cardRef.current, {
+                scale: 3,
+                backgroundColor: null,
+                logging: false,
+                useCORS: true,
+                allowTaint: true,
+            });
 
             canvas.toBlob(async (blob) => {
                 if (!blob) return;
