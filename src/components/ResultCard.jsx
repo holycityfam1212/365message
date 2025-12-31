@@ -237,7 +237,7 @@ const ResultCard = ({ verse, onRestart }) => {
                 {/* Capture Container - includes background + card */}
                 <div
                     ref={cardRef}
-                    className="relative w-full max-w-[340px] aspect-[9/16] flex-shrink-0 bg-cover bg-center"
+                    className="relative w-full max-w-[340px] flex-shrink-0 bg-cover bg-center"
                     style={{
                         backgroundImage: `url(${themeStyle.bgImg})`,
                         borderRadius: '12px',
@@ -245,6 +245,9 @@ const ResultCard = ({ verse, onRestart }) => {
                         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)',
                         backdropFilter: 'blur(8px)',
                         filter: 'brightness(1.02) contrast(1.05)',
+                        height: '540px',
+                        minHeight: '540px',
+                        maxHeight: '540px',
                     }}
                 >
                     {/* Card Area */}
@@ -272,8 +275,8 @@ const ResultCard = ({ verse, onRestart }) => {
                             }}
                         />
 
-                        {/* Content Container */}
-                        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center px-12 pt-28 pb-20" style={{ zIndex: 3 }}>
+                        {/* Content Container - Fixed height with overflow handling */}
+                        <div className="relative z-20 w-full h-full flex flex-col items-center justify-center px-12 pt-28 pb-20 overflow-hidden" style={{ zIndex: 3 }}>
 
                             {/* Theme Badge */}
                             <div className="mb-6">
@@ -283,13 +286,11 @@ const ResultCard = ({ verse, onRestart }) => {
                             </div>
 
                             {/* Main Verse */}
-                            <div className="mb-6 w-full">
+                            <div className="mb-6 w-full" style={{ maxHeight: '280px', overflow: 'hidden' }}>
                                 <p
-                                    className="font-medium break-keep whitespace-pre-wrap text-center"
+                                    className="text-center leading-relaxed"
                                     style={{
-                                        fontFamily: "'Noto Serif KR', serif",
-                                        letterSpacing: '-0.08em',
-                                        lineHeight: 1.5,
+                                        fontSize: '1.15rem',
                                         color: themeStyle.color,
                                         wordBreak: 'keep-all',
                                         overflowWrap: 'break-word',
