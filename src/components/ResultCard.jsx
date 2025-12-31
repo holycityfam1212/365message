@@ -109,7 +109,22 @@ const ResultCard = ({ verse, onRestart }) => {
 
             // Always use PNG for quality
             canvas.toBlob(async (blob) => {
-                if (!blob) return;
+                if (!blob) {
+                    alert("이미지 생성에 실패했습니다.");
+                    return;
+                }
+
+                // Helper function to download image
+                const downloadImage = () => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `2026_Gods_Message_${verse.theme}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(url);
+                };
 
                 const file = new File([blob], `2026_Gods_Message_${verse.theme}.png`, { type: 'image/png' });
                 const shareData = {
@@ -117,18 +132,23 @@ const ResultCard = ({ verse, onRestart }) => {
                     title: '2026 내게 주시는 하나님의 말씀',
                 };
 
+                // Check if file sharing is supported
                 if (navigator.canShare && navigator.canShare(shareData)) {
                     try {
                         await navigator.share(shareData);
                     } catch (err) {
                         if (err.name !== 'AbortError') {
                             console.log('Share failed:', err);
-                            alert('공유에 실패했습니다. 다시 시도해주세요.');
+                            // Fallback to download on share failure
+                            downloadImage();
+                            alert('공유가 지원되지 않아 이미지를 다운로드합니다.');
                         }
+                        // If AbortError, user cancelled, do nothing
                     }
                 } else {
                     // Fallback: Download the image
-                    alert('이 기기에서는 공유가 지원되지 않습니다. 저장 기능을 이용해주세요.');
+                    downloadImage();
+                    alert('이 기기에서는 파일 공유가 지원되지 않아 이미지를 다운로드합니다.');
                 }
             }, 'image/png', 1.0);
         } catch (err) {
@@ -165,9 +185,10 @@ const ResultCard = ({ verse, onRestart }) => {
                 className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
                 style={{
                     backgroundImage: `url(${themeStyle.bgImg})`,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundSize: 'cover'
+                    width: '100%',
+                    minHeight: '100%',
+                    backgroundSize: 'cover',
+                    backgroundAttachment: 'fixed'
                 }}
             />
 

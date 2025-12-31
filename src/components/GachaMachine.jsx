@@ -215,9 +215,10 @@ const GachaMachine = ({ onFinish }) => {
                 className="fixed inset-0 z-0 bg-cover bg-center bg-no-repeat"
                 style={{
                     backgroundImage: `url(${gachaBg})`,
-                    width: '100vw',
-                    height: '100vh',
-                    backgroundSize: 'cover'
+                    width: '100%',
+                    minHeight: '100%',
+                    backgroundSize: 'cover',
+                    backgroundAttachment: 'fixed'
                 }}
             />
 
