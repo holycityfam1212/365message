@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Analytics } from '@vercel/analytics/react';
 import GachaMachine from './components/GachaMachine';
 import ResultCard from './components/ResultCard';
 import DataUploader from './components/DataUploader'; // Temp component
@@ -95,6 +96,9 @@ function App() {
       <div className="fixed bottom-1 right-1 text-[10px] text-gray-400 opacity-0 pointer-events-none z-50">
         v1.0.1 (Debug)
       </div>
+
+      {/* Vercel Analytics */}
+      <Analytics />
     </div>
   );
 }
