@@ -35,32 +35,26 @@ const THEME_STYLES = {
 
 const ResultCard = ({ verse, onRestart }) => {
     const cardRef = useRef(null);
+    const [showImageModal, setShowImageModal] = useState(false);
+    const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
 
     // Derived state
     const themeStyle = (verse && verse.theme && THEME_STYLES[verse.theme])
         ? THEME_STYLES[verse.theme]
         : THEME_STYLES['default'];
 
-    // Generate card image using html2canvas
-
+    // Generate high-quality card image and display in modal
     const handleDownload = async () => {
         if (!cardRef.current) return;
 
         try {
-            // Detect mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
             // Wait for fonts to be ready
             await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            // Longer delay for mobile devices
-            await new Promise(resolve => setTimeout(resolve, isMobile ? 500 : 300));
-
-            // Use lower scale on mobile to avoid memory issues
-            const scale = isMobile ? 2 : 4;
-
+            // Use high scale for quality (6x)
             const canvas = await html2canvas(cardRef.current, {
-                scale: scale,
+                scale: 6,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
@@ -71,17 +65,13 @@ const ResultCard = ({ verse, onRestart }) => {
                 windowHeight: document.documentElement.scrollHeight,
             });
 
-            // Use JPEG for better mobile compatibility (smaller file size)
-            const imageType = isMobile ? 'image/jpeg' : 'image/png';
-            const quality = isMobile ? 0.95 : 1.0;
-
-            const link = document.createElement('a');
-            link.download = `2026_Gods_Message_${verse.theme}.${isMobile ? 'jpg' : 'png'}`;
-            link.href = canvas.toDataURL(imageType, quality);
-            link.click();
+            // Always use PNG for quality
+            const imageUrl = canvas.toDataURL('image/png', 1.0);
+            setGeneratedImageUrl(imageUrl);
+            setShowImageModal(true);
         } catch (err) {
             console.error("Failed to generate image", err);
-            alert("이미지 저장에 실패했습니다. 다시 시도해주세요.");
+            alert("이미지 생성에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -100,20 +90,13 @@ const ResultCard = ({ verse, onRestart }) => {
         if (!cardRef.current) return;
 
         try {
-            // Detect mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-
             // Wait for fonts to be ready
             await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, 300));
 
-            // Longer delay for mobile devices
-            await new Promise(resolve => setTimeout(resolve, isMobile ? 500 : 300));
-
-            // Use lower scale on mobile to avoid memory issues
-            const scale = isMobile ? 2 : 4;
-
+            // Use high scale for quality (6x)
             const canvas = await html2canvas(cardRef.current, {
-                scale: scale,
+                scale: 6,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
@@ -124,15 +107,11 @@ const ResultCard = ({ verse, onRestart }) => {
                 windowHeight: document.documentElement.scrollHeight,
             });
 
-            // Use JPEG for better mobile compatibility
-            const imageType = isMobile ? 'image/jpeg' : 'image/png';
-            const quality = isMobile ? 0.95 : 1.0;
-
+            // Always use PNG for quality
             canvas.toBlob(async (blob) => {
                 if (!blob) return;
 
-                const fileExt = isMobile ? 'jpg' : 'png';
-                const file = new File([blob], `2026_Gods_Message_${verse.theme}.${fileExt}`, { type: imageType });
+                const file = new File([blob], `2026_Gods_Message_${verse.theme}.png`, { type: 'image/png' });
                 const shareData = {
                     files: [file],
                     title: '2026 내게 주시는 하나님의 말씀',
@@ -151,7 +130,7 @@ const ResultCard = ({ verse, onRestart }) => {
                     // Fallback: Download the image
                     alert('이 기기에서는 공유가 지원되지 않습니다. 저장 기능을 이용해주세요.');
                 }
-            }, imageType, quality);
+            }, 'image/png', 1.0);
         } catch (err) {
             console.error("Failed to generate image for sharing", err);
             alert("이미지 생성에 실패했습니다. 다시 시도해주세요.");
@@ -336,6 +315,42 @@ const ResultCard = ({ verse, onRestart }) => {
                 </div>
 
             </div>
+
+            {/* Image Modal for Long-Press Save */}
+            {showImageModal && generatedImageUrl && (
+                <div
+                    className="fixed inset-0 z-[200] bg-black/90 flex flex-col items-center justify-center p-4 animate-fade-in"
+                    onClick={() => {
+                        setShowImageModal(false);
+                        setGeneratedImageUrl(null);
+                    }}
+                >
+                    <div className="text-center mb-4">
+                        <p className="text-white text-lg font-bold mb-2">이미지를 꾹 눌러 저장하세요</p>
+                        <p className="text-white/70 text-sm">탭하면 닫힙니다</p>
+                    </div>
+
+                    <div className="max-w-[90vw] max-h-[70vh] overflow-auto">
+                        <img
+                            src={generatedImageUrl}
+                            alt="말씀 카드"
+                            className="w-full h-auto rounded-lg shadow-2xl"
+                            style={{ maxWidth: '340px' }}
+                        />
+                    </div>
+
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setShowImageModal(false);
+                            setGeneratedImageUrl(null);
+                        }}
+                        className="mt-6 px-6 py-3 bg-white/20 backdrop-blur-md text-white rounded-full font-semibold hover:bg-white/30 transition-all"
+                    >
+                        닫기
+                    </button>
+                </div>
+            )}
         </>
     );
 };
