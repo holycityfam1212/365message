@@ -6,7 +6,11 @@
 
 @layer base {
     body {
-        @apply bg-message-ivory text-message-text antialiased min-h-[100dvh] flex flex-col items-center justify-center font-serif leading-relaxed overflow-x-hidden;
+        @apply text-message-text antialiased min-h-[100dvh] font-serif leading-relaxed overflow-x-hidden;
         letter-spacing: -0.08em;
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100vh;
     }
 }
