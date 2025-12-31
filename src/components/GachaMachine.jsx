@@ -253,7 +253,12 @@ const GachaMachine = ({ onFinish }) => {
                 </div>
 
                 {/* Logo */}
-                <div className="absolute top-6 right-6 z-10 opacity-70 hover:opacity-100 transition-opacity">
+                <div
+                    className="absolute top-6 right-6 z-10 hover:opacity-100 transition-all duration-700"
+                    style={{
+                        opacity: isSpinning || capsuleDropped ? 0 : 0.7
+                    }}
+                >
                     <img src={logoImg} alt="Today's Message Logo" className="w-12 h-auto drop-shadow-sm" />
                 </div>
 
@@ -325,7 +330,13 @@ const GachaMachine = ({ onFinish }) => {
                 </div>
 
                 {/* Footer Text */}
-                <div className="text-center z-10 flex-shrink-0">
+                <div
+                    className="text-center z-10 flex-shrink-0 transition-all duration-700"
+                    style={{
+                        opacity: isSpinning || capsuleDropped ? 0 : 1,
+                        transform: isSpinning || capsuleDropped ? 'translateY(10px)' : 'translateY(0)'
+                    }}
+                >
                     <p className="text-gray-300 text-xs font-light tracking-wide">
                         Developed by <span className="font-medium text-gray-400">@ppaulcasso</span>
                     </p>
