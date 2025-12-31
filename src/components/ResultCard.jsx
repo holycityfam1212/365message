@@ -54,7 +54,7 @@ const ResultCard = ({ verse, onRestart }) => {
             await new Promise(resolve => setTimeout(resolve, 300));
 
             const canvas = await html2canvas(cardRef.current, {
-                scale: 5,
+                scale: 2,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
@@ -93,7 +93,7 @@ const ResultCard = ({ verse, onRestart }) => {
             await new Promise(resolve => setTimeout(resolve, 300));
 
             const canvas = await html2canvas(cardRef.current, {
-                scale: 5,
+                scale: 2,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
