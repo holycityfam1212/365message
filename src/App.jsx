@@ -87,8 +87,8 @@ function App() {
         <ResultCard verse={drawnVerse} onRestart={handleRestart} />
       )}
 
-      {/* Debug Version Indicator */}
-      <div className="fixed bottom-1 right-1 text-[10px] text-gray-400 opacity-50 pointer-events-none z-50">
+      {/* Debug Version Indicator - Hidden */}
+      <div className="fixed bottom-1 right-1 text-[10px] text-gray-400 opacity-0 pointer-events-none z-50">
         v1.0.1 (Debug)
       </div>
     </div>

@@ -164,18 +164,17 @@ const ResultCard = ({ verse, onRestart }) => {
                 {/* Spacer */}
                 <div className="h-8"></div>
 
-                {/* Capture Container - glassmorphism background + card */}
+                {/* Capture Container - includes background + card */}
                 <div
                     ref={cardRef}
-                    className="relative w-full max-w-[340px] aspect-[9/16] flex-shrink-0"
+                    className="relative w-full max-w-[340px] aspect-[9/16] flex-shrink-0 bg-cover bg-center"
                     style={{
-                        background: `linear-gradient(135deg, ${themeStyle.color}15, ${themeStyle.color}08)`,
-                        backdropFilter: 'blur(20px)',
-                        WebkitBackdropFilter: 'blur(20px)',
-                        borderRadius: '16px',
-                        border: '1px solid rgba(255, 255, 255, 0.2)',
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
-                        overflow: 'hidden'
+                        backgroundImage: `url(${themeStyle.bgImg})`,
+                        borderRadius: '12px',
+                        overflow: 'hidden',
+                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)',
+                        backdropFilter: 'blur(8px)',
+                        filter: 'brightness(1.02) contrast(1.05)',
                     }}
                 >
                     {/* Card Area */}
