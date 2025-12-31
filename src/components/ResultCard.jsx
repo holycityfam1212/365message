@@ -212,7 +212,8 @@ const ResultCard = ({ verse, onRestart }) => {
                                     lineHeight: 1.5,
                                     color: themeStyle.color,
                                     wordBreak: 'keep-all',
-                                    overflowWrap: 'break-word'
+                                    overflowWrap: 'break-word',
+                                    textWrap: 'pretty'
                                 }}
                             >
                                 {verse.text}
