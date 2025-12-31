@@ -245,8 +245,13 @@ const ResultCard = ({ verse, onRestart }) => {
                 <div className="flex flex-col gap-3 mt-8 w-full max-w-[340px]">
                     <button
                         onClick={handleDownload}
-                        className="w-full py-4 rounded-xl shadow-md font-bold text-white transition-all duration-300 transform hover:-translate-y-1 flex items-center justify-center gap-2"
-                        style={{ backgroundColor: themeStyle.color }}
+                        className="w-full py-3.5 rounded-2xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-lg flex items-center justify-center gap-2 backdrop-blur-md border"
+                        style={{
+                            backgroundColor: `${themeStyle.color}15`,
+                            color: themeStyle.color,
+                            borderColor: `${themeStyle.color}25`,
+                            backdropFilter: 'blur(12px)',
+                        }}
                     >
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -257,20 +262,30 @@ const ResultCard = ({ verse, onRestart }) => {
                     <div className="flex gap-3 w-full">
                         <button
                             onClick={handleShare}
-                            className="flex-1 py-4 rounded-xl shadow-sm font-semibold transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 bg-white/60 backdrop-blur-sm border border-white/40 hover:bg-white/80"
-                            style={{ color: themeStyle.color }}
+                            className="flex-1 py-3.5 rounded-2xl font-medium transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center gap-2 backdrop-blur-md border"
+                            style={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                color: themeStyle.color,
+                                borderColor: 'rgba(255, 255, 255, 0.6)',
+                                backdropFilter: 'blur(12px)',
+                            }}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4.5 h-4.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
                             </svg>
                             공유하기
                         </button>
                         <button
                             onClick={onRestart}
-                            className="flex-1 py-4 rounded-xl shadow-sm font-semibold transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center gap-2 bg-white/60 backdrop-blur-sm border border-white/40 hover:bg-white/80"
-                            style={{ color: themeStyle.color }}
+                            className="flex-1 py-3.5 rounded-2xl font-medium transition-all duration-300 transform hover:-translate-y-0.5 hover:shadow-md flex items-center justify-center gap-2 backdrop-blur-md border"
+                            style={{
+                                backgroundColor: 'rgba(255, 255, 255, 0.4)',
+                                color: themeStyle.color,
+                                borderColor: 'rgba(255, 255, 255, 0.6)',
+                                backdropFilter: 'blur(12px)',
+                            }}
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4.5 h-4.5">
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
                             </svg>
                             다시 뽑기
