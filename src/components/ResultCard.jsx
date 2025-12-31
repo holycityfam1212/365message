@@ -167,25 +167,33 @@ const ResultCard = ({ verse, onRestart }) => {
                 {/* Card Area to capture */}
                 <div
                     ref={cardRef}
-                    className="relative flex items-center justify-center w-full max-w-[340px] aspect-[9/16] flex-shrink-0 bg-contain bg-center bg-no-repeat"
+                    className="relative flex items-center justify-center w-full max-w-[340px] aspect-[9/16] flex-shrink-0"
                     style={{
-                        backgroundImage: `url(${cardFrame})`,
                         opacity: 0.96,
                         filter: 'brightness(0.98) contrast(0.96)',
                         boxShadow: '0 0 60px -15px rgba(0,0,0,0.08)',
                         border: '0.5px solid rgba(255,255,255,0.08)'
                     }}
                 >
+                    {/* Card Frame Image - Using img tag for better html2canvas compatibility */}
+                    <img
+                        src={cardFrame}
+                        alt="Card Frame"
+                        className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                        style={{ zIndex: 1 }}
+                    />
+
                     {/* Subtle theme color overlay for harmony */}
                     <div
                         className="absolute inset-0 pointer-events-none mix-blend-overlay"
                         style={{
-                            background: `linear-gradient(135deg, ${themeStyle.color}08, ${themeStyle.color}03)`
+                            background: `linear-gradient(135deg, ${themeStyle.color}08, ${themeStyle.color}03)`,
+                            zIndex: 2
                         }}
                     />
 
                     {/* Content Container */}
-                    <div className="relative z-20 w-full h-full flex flex-col items-center justify-center px-12 pt-28 pb-20">
+                    <div className="relative z-20 w-full h-full flex flex-col items-center justify-center px-12 pt-28 pb-20" style={{ zIndex: 3 }}>
 
                         {/* Theme Badge */}
                         <div className="mb-6">
