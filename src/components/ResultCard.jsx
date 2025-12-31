@@ -47,41 +47,84 @@ const ResultCard = ({ verse, onRestart }) => {
         if (!cardRef.current) return;
 
         try {
-            // Detect mobile device
             const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-            // Wait for fonts to be ready
+            console.log('[Download] Starting, isMobile:', isMobile);
+
             await document.fonts.ready;
+            await new Promise(resolve => setTimeout(resolve, isMobile ? 800 : 300));
 
-            // Longer delay for mobile devices
-            await new Promise(resolve => setTimeout(resolve, isMobile ? 500 : 300));
-
-            // Use lower scale on mobile to avoid memory issues
-            const scale = isMobile ? 2 : 4;
+            const scale = isMobile ? 1.5 : 3;
 
             const canvas = await html2canvas(cardRef.current, {
                 scale: scale,
-                backgroundColor: null,
+                backgroundColor: '#FDFCF0',
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
-                scrollY: -window.scrollY,
-                scrollX: -window.scrollX,
-                windowWidth: document.documentElement.scrollWidth,
-                windowHeight: document.documentElement.scrollHeight,
             });
 
-            // Use JPEG for better mobile compatibility (smaller file size)
-            const imageType = isMobile ? 'image/jpeg' : 'image/png';
-            const quality = isMobile ? 0.95 : 1.0;
+            console.log('[Download] Canvas created:', canvas.width, 'x', canvas.height);
 
-            const link = document.createElement('a');
-            link.download = `2026_Gods_Message_${verse.theme}.${isMobile ? 'jpg' : 'png'}`;
-            link.href = canvas.toDataURL(imageType, quality);
-            link.click();
+            const imageUrl = canvas.toDataURL('image/jpeg', 0.92);
+
+            if (isMobile) {
+                // Mobile: Open image in new tab so user can long-press to save
+                const newWindow = window.open();
+                if (newWindow) {
+                    newWindow.document.write(`
+                        <html>
+                            <head>
+                                <title>2026 말씀 카드</title>
+                                <style>
+                                    body { 
+                                        margin: 0; 
+                                        display: flex; 
+                                        justify-content: center; 
+                                        align-items: center; 
+                                        min-height: 100vh; 
+                                        background: #f5f5f5;
+                                    }
+                                    img { 
+                                        max-width: 100%; 
+                                        height: auto; 
+                                        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+                                    }
+                                    .guide {
+                                        position: fixed;
+                                        top: 20px;
+                                        left: 50%;
+                                        transform: translateX(-50%);
+                                        background: rgba(0,0,0,0.8);
+                                        color: white;
+                                        padding: 12px 24px;
+                                        border-radius: 24px;
+                                        font-size: 14px;
+                                        z-index: 1000;
+                                    }
+                                </style>
+                            </head>
+                            <body>
+                                <div class="guide">이미지를 길게 눌러서 갤러리에 저장하세요 📥</div>
+                                <img src="${imageUrl}" alt="2026 말씀 카드" />
+                            </body>
+                        </html>
+                    `);
+                    console.log('[Download] Image opened in new tab');
+                } else {
+                    alert('팝업이 차단되었습니다. 팝업 허용 후 다시 시도해주세요.');
+                }
+            } else {
+                // Desktop: Direct download
+                const link = document.createElement('a');
+                link.download = `2026_Gods_Message_${verse.theme}.jpg`;
+                link.href = imageUrl;
+                link.click();
+                console.log('[Download] Download triggered');
+            }
         } catch (err) {
-            console.error("Failed to generate image", err);
-            alert("이미지 저장에 실패했습니다. 다시 시도해주세요.");
+            console.error("[Download] Failed:", err);
+            alert(`이미지 생성 실패\n${err.message}\n\n스크린샷을 이용해주세요.`);
         }
     };
 
@@ -99,62 +142,60 @@ const ResultCard = ({ verse, onRestart }) => {
 
         if (!cardRef.current) return;
 
-        try {
-            // Detect mobile device
-            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-            // Wait for fonts to be ready
-            await document.fonts.ready;
+        // Mobile: Simplified approach
+        if (isMobile) {
+            try {
+                console.log('[Share] Mobile share attempt');
 
-            // Longer delay for mobile devices
-            await new Promise(resolve => setTimeout(resolve, isMobile ? 500 : 300));
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 800));
 
-            // Use lower scale on mobile to avoid memory issues
-            const scale = isMobile ? 2 : 4;
+                const canvas = await html2canvas(cardRef.current, {
+                    scale: 1.5,
+                    backgroundColor: '#FDFCF0',
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                });
 
-            const canvas = await html2canvas(cardRef.current, {
-                scale: scale,
-                backgroundColor: null,
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
-                scrollY: -window.scrollY,
-                scrollX: -window.scrollX,
-                windowWidth: document.documentElement.scrollWidth,
-                windowHeight: document.documentElement.scrollHeight,
-            });
+                console.log('[Share] Canvas created');
 
-            // Use JPEG for better mobile compatibility
-            const imageType = isMobile ? 'image/jpeg' : 'image/png';
-            const quality = isMobile ? 0.95 : 1.0;
+                // Convert to blob
+                const blob = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/jpeg', 0.92);
+                });
 
-            canvas.toBlob(async (blob) => {
-                if (!blob) return;
-
-                const fileExt = isMobile ? 'jpg' : 'png';
-                const file = new File([blob], `2026_Gods_Message_${verse.theme}.${fileExt}`, { type: imageType });
-                const shareData = {
-                    files: [file],
-                    title: '2026 내게 주시는 하나님의 말씀',
-                };
-
-                if (navigator.canShare && navigator.canShare(shareData)) {
-                    try {
-                        await navigator.share(shareData);
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            console.log('Share failed:', err);
-                            alert('공유에 실패했습니다. 다시 시도해주세요.');
-                        }
-                    }
-                } else {
-                    // Fallback: Download the image
-                    alert('이 기기에서는 공유가 지원되지 않습니다. 저장 기능을 이용해주세요.');
+                if (!blob) {
+                    throw new Error('Blob 생성 실패');
                 }
-            }, imageType, quality);
-        } catch (err) {
-            console.error("Failed to generate image for sharing", err);
-            alert("이미지 생성에 실패했습니다. 다시 시도해주세요.");
+
+                console.log('[Share] Blob created, size:', blob.size);
+
+                const file = new File([blob], '2026_Gods_Message.jpg', { type: 'image/jpeg' });
+
+                // Try native share
+                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                    await navigator.share({
+                        files: [file],
+                        title: '2026 내게 주시는 하나님의 말씀'
+                    });
+                    console.log('[Share] Success');
+                } else {
+                    // Fallback: Download instead
+                    console.log('[Share] Share API not available, using download');
+                    handleDownload();
+                }
+            } catch (err) {
+                console.error('[Share] Failed:', err);
+                if (err.name !== 'AbortError') {
+                    alert('공유 기능을 사용할 수 없습니다.\n저장 기능을 이용해주세요.');
+                }
+            }
+        } else {
+            // Desktop: Use link share
+            shareLink();
         }
     };
 
@@ -181,7 +222,7 @@ const ResultCard = ({ verse, onRestart }) => {
 
     return (
         <>
-            {/* Fixed Background Layer */}
+            {/* Fixed Background Layer - Full Screen */}
             <div
                 className="fixed inset-0 z-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${themeStyle.bgImg})` }}
@@ -324,9 +365,8 @@ const ResultCard = ({ verse, onRestart }) => {
                 </div>
 
                 <div className="mt-6 text-center">
-                    <p className="text-gray-500 text-xs mb-2">하루 한 번, 뽑은 말씀대로 살아보기</p>
-                    <p className="text-gray-400 text-xs font-light">
-                        Developed by <span className="font-medium text-gray-500">@ppaulcasso</span>
+                    <p className="text-gray-300 text-xs font-light tracking-wide">
+                        Developed by <span className="font-medium text-gray-400">@ppaulcasso</span>
                     </p>
                 </div>
 

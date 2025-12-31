@@ -210,13 +210,13 @@ const GachaMachine = ({ onFinish }) => {
 
     return (
         <>
-            {/* Fixed Background Layer */}
+            {/* Fixed Background Layer - Full Screen */}
             <div
                 className="fixed inset-0 z-0 bg-cover bg-center"
                 style={{ backgroundImage: `url(${gachaBg})` }}
             />
 
-            {/* Scrollable Content Layer */}
+            {/* Content Layer */}
             <div className="w-full min-h-[100dvh] flex flex-col items-center justify-between py-8 relative overflow-hidden z-10">
 
                 {/* Floating Decorations */}
