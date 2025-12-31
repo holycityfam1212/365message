@@ -37,33 +37,44 @@ const ResultCard = ({ verse, onRestart }) => {
     const cardRef = useRef(null);
     const [showImageModal, setShowImageModal] = useState(false);
     const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
+    const [isGeneratingImage, setIsGeneratingImage] = useState(false);
 
     // Derived state
     const themeStyle = (verse && verse.theme && THEME_STYLES[verse.theme])
         ? THEME_STYLES[verse.theme]
         : THEME_STYLES['default'];
 
+    // Shared image generation function
+    const generateCardImage = async () => {
+        if (!cardRef.current) throw new Error('Card reference not found');
+
+        // Wait for fonts and images to be ready
+        await document.fonts.ready;
+        await new Promise(resolve => setTimeout(resolve, 300));
+
+        // Use scale 3 for better performance while maintaining quality (340px × 3 = 1020px)
+        const canvas = await html2canvas(cardRef.current, {
+            scale: 3,
+            backgroundColor: null,
+            logging: false,
+            useCORS: true,
+            allowTaint: true,
+            scrollY: -window.scrollY,
+            scrollX: -window.scrollX,
+            windowWidth: document.documentElement.scrollWidth,
+            windowHeight: document.documentElement.scrollHeight,
+        });
+
+        return canvas;
+    };
+
     // Generate high-quality card image and display in modal
     const handleDownload = async () => {
-        if (!cardRef.current) return;
+        if (isGeneratingImage) return;
 
+        setIsGeneratingImage(true);
         try {
-            // Wait for fonts to be ready
-            await document.fonts.ready;
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            // Use high scale for quality (6x)
-            const canvas = await html2canvas(cardRef.current, {
-                scale: 6,
-                backgroundColor: null,
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
-                scrollY: -window.scrollY,
-                scrollX: -window.scrollX,
-                windowWidth: document.documentElement.scrollWidth,
-                windowHeight: document.documentElement.scrollHeight,
-            });
+            const canvas = await generateCardImage();
 
             // Always use PNG for quality
             const imageUrl = canvas.toDataURL('image/png', 1.0);
@@ -71,11 +82,15 @@ const ResultCard = ({ verse, onRestart }) => {
             setShowImageModal(true);
         } catch (err) {
             console.error("Failed to generate image", err);
-            alert("이미지 생성에 실패했습니다. 다시 시도해주세요.");
+            alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+        } finally {
+            setIsGeneratingImage(false);
         }
     };
 
     const handleShare = async () => {
+        if (isGeneratingImage) return;
+
         // Track Share
         try {
             await supabase.from('analytics_actions').insert([{
@@ -87,30 +102,16 @@ const ResultCard = ({ verse, onRestart }) => {
             console.error("Tracking Failed", err);
         }
 
-        if (!cardRef.current) return;
-
+        setIsGeneratingImage(true);
         try {
-            // Wait for fonts to be ready
-            await document.fonts.ready;
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            // Use high scale for quality (6x)
-            const canvas = await html2canvas(cardRef.current, {
-                scale: 6,
-                backgroundColor: null,
-                logging: false,
-                useCORS: true,
-                allowTaint: true,
-                scrollY: -window.scrollY,
-                scrollX: -window.scrollX,
-                windowWidth: document.documentElement.scrollWidth,
-                windowHeight: document.documentElement.scrollHeight,
-            });
+            const canvas = await generateCardImage();
 
             // Always use PNG for quality
             canvas.toBlob(async (blob) => {
+                setIsGeneratingImage(false);
+
                 if (!blob) {
-                    alert("이미지 생성에 실패했습니다.");
+                    alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
                     return;
                 }
 
@@ -153,7 +154,8 @@ const ResultCard = ({ verse, onRestart }) => {
             }, 'image/png', 1.0);
         } catch (err) {
             console.error("Failed to generate image for sharing", err);
-            alert("이미지 생성에 실패했습니다. 다시 시도해주세요.");
+            alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
+            setIsGeneratingImage(false);
         }
     };
 
@@ -279,23 +281,37 @@ const ResultCard = ({ verse, onRestart }) => {
                 <div className="flex flex-col gap-3 mt-8 w-full max-w-[340px]">
                     <button
                         onClick={handleDownload}
-                        className="w-full py-4 rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex items-center justify-center gap-2"
+                        disabled={isGeneratingImage}
+                        className="w-full py-4 rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                         style={{
                             backgroundColor: themeStyle.color,
                             boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
                             backdropFilter: 'blur(8px)'
                         }}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                        </svg>
-                        말씀 카드 저장하기
+                        {isGeneratingImage ? (
+                            <>
+                                <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                생성 중...
+                            </>
+                        ) : (
+                            <>
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                말씀 카드 저장하기
+                            </>
+                        )}
                     </button>
 
                     <div className="flex gap-3 w-full">
                         <button
                             onClick={handleShare}
-                            className="flex-1 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2"
+                            disabled={isGeneratingImage}
+                            className="flex-1 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             style={{
                                 color: themeStyle.color,
                                 backgroundColor: 'rgba(255, 255, 255, 0.7)',
@@ -311,7 +327,8 @@ const ResultCard = ({ verse, onRestart }) => {
                         </button>
                         <button
                             onClick={onRestart}
-                            className="flex-1 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2"
+                            disabled={isGeneratingImage}
+                            className="flex-1 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                             style={{
                                 color: themeStyle.color,
                                 backgroundColor: 'rgba(255, 255, 255, 0.7)',
