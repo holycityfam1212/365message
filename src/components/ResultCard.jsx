@@ -35,150 +35,52 @@ const THEME_STYLES = {
 
 const ResultCard = ({ verse, onRestart }) => {
     const cardRef = useRef(null);
-    const [showImageModal, setShowImageModal] = useState(false);
-    const [generatedImageUrl, setGeneratedImageUrl] = useState(null);
-    const [isGeneratingImage, setIsGeneratingImage] = useState(false);
+    const [cardImageUrl, setCardImageUrl] = useState(null);
+    const [isGeneratingImage, setIsGeneratingImage] = useState(true);
 
     // Derived state
     const themeStyle = (verse && verse.theme && THEME_STYLES[verse.theme])
         ? THEME_STYLES[verse.theme]
         : THEME_STYLES['default'];
 
-    // Shared image generation function
-    const generateCardImage = async () => {
-        if (!cardRef.current) throw new Error('Card reference not found');
+    // Auto-generate card image on mount
+    useEffect(() => {
+        const generateImage = async () => {
+            if (!cardRef.current) return;
 
-        // Wait for fonts and images to be ready
-        await document.fonts.ready;
-        await new Promise(resolve => setTimeout(resolve, 300));
+            setIsGeneratingImage(true);
+            try {
+                // Wait for fonts and images to be ready
+                await document.fonts.ready;
+                await new Promise(resolve => setTimeout(resolve, 500));
 
-        // Use scale 3 for better performance while maintaining quality (340px × 3 = 1020px)
-        const canvas = await html2canvas(cardRef.current, {
-            scale: 3,
-            backgroundColor: null,
-            logging: false,
-            useCORS: true,
-            allowTaint: true,
-            scrollY: -window.scrollY,
-            scrollX: -window.scrollX,
-            windowWidth: document.documentElement.scrollWidth,
-            windowHeight: document.documentElement.scrollHeight,
-        });
+                // Use scale 3 for better performance while maintaining quality (340px × 3 = 1020px)
+                const canvas = await html2canvas(cardRef.current, {
+                    scale: 3,
+                    backgroundColor: null,
+                    logging: false,
+                    useCORS: true,
+                    allowTaint: true,
+                    scrollY: -window.scrollY,
+                    scrollX: -window.scrollX,
+                    windowWidth: document.documentElement.scrollWidth,
+                    windowHeight: document.documentElement.scrollHeight,
+                });
 
-        return canvas;
-    };
-
-    // Generate high-quality card image and display in modal
-    const handleDownload = async () => {
-        if (isGeneratingImage) return;
-
-        setIsGeneratingImage(true);
-        try {
-            const canvas = await generateCardImage();
-
-            // Always use PNG for quality
-            const imageUrl = canvas.toDataURL('image/png', 1.0);
-            setGeneratedImageUrl(imageUrl);
-            setShowImageModal(true);
-        } catch (err) {
-            console.error("Failed to generate image", err);
-            alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
-        } finally {
-            setIsGeneratingImage(false);
-        }
-    };
-
-    const handleShare = async () => {
-        if (isGeneratingImage) return;
-
-        // Track Share
-        try {
-            await supabase.from('analytics_actions').insert([{
-                action_type: 'SHARE',
-                verse_id: verse.id,
-                theme: verse.theme
-            }]);
-        } catch (err) {
-            console.error("Tracking Failed", err);
-        }
-
-        setIsGeneratingImage(true);
-        try {
-            const canvas = await generateCardImage();
-
-            // Always use PNG for quality
-            canvas.toBlob(async (blob) => {
+                // Convert to PNG
+                const imageUrl = canvas.toDataURL('image/png', 1.0);
+                setCardImageUrl(imageUrl);
+            } catch (err) {
+                console.error("Failed to generate card image", err);
+            } finally {
                 setIsGeneratingImage(false);
-
-                if (!blob) {
-                    alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
-                    return;
-                }
-
-                // Helper function to download image
-                const downloadImage = () => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `2026_Gods_Message_${verse.theme}.png`;
-                    document.body.appendChild(a);
-                    a.click();
-                    document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
-                };
-
-                const file = new File([blob], `2026_Gods_Message_${verse.theme}.png`, { type: 'image/png' });
-                const shareData = {
-                    files: [file],
-                    title: '2026 내게 주시는 하나님의 말씀',
-                };
-
-                // Check if file sharing is supported
-                if (navigator.canShare && navigator.canShare(shareData)) {
-                    try {
-                        await navigator.share(shareData);
-                    } catch (err) {
-                        if (err.name !== 'AbortError') {
-                            console.log('Share failed:', err);
-                            // Fallback to download on share failure
-                            downloadImage();
-                            alert('공유가 지원되지 않아 이미지를 다운로드합니다.');
-                        }
-                        // If AbortError, user cancelled, do nothing
-                    }
-                } else {
-                    // Fallback: Download the image
-                    downloadImage();
-                    alert('이 기기에서는 파일 공유가 지원되지 않아 이미지를 다운로드합니다.');
-                }
-            }, 'image/png', 1.0);
-        } catch (err) {
-            console.error("Failed to generate image for sharing", err);
-            alert("이미지 생성에 실패했습니다. 잠시 후 다시 시도해주세요.");
-            setIsGeneratingImage(false);
-        }
-    };
-
-    const shareLink = async () => {
-        const url = window.location.href;
-        const shareData = {
-            title: '2026 내게 주시는 하나님의 말씀',
-            text: `[${verse.reference}] ${verse.text}\n\n말씀 카드 확인하기:`,
-            url: url
+            }
         };
 
-        if (navigator.share) {
-            try {
-                await navigator.share(shareData);
-            } catch (err) {
-                console.log('Link share canceled or failed:', err);
-            }
-        } else {
-            navigator.clipboard.writeText(url).then(() => {
-                alert("링크가 복사되었습니다! 친구들과 말씀을 나누어보세요.");
-            });
-        }
-    };
+        generateImage();
+    }, [verse]);
+
+
 
     return (
         <>
@@ -200,7 +102,7 @@ const ResultCard = ({ verse, onRestart }) => {
                 {/* Spacer */}
                 <div className="h-8"></div>
 
-                {/* Capture Container - includes background + card */}
+                {/* Card Display - Hidden during generation, used only for html2canvas */}
                 <div
                     ref={cardRef}
                     className="relative w-full max-w-[340px] aspect-[9/16] flex-shrink-0 bg-cover bg-center"
@@ -211,6 +113,9 @@ const ResultCard = ({ verse, onRestart }) => {
                         boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.05)',
                         backdropFilter: 'blur(8px)',
                         filter: 'brightness(1.02) contrast(1.05)',
+                        position: cardImageUrl ? 'absolute' : 'relative',
+                        visibility: cardImageUrl ? 'hidden' : 'visible',
+                        zIndex: cardImageUrl ? -1 : 'auto'
                     }}
                 >
                     {/* Card Area */}
@@ -277,75 +182,64 @@ const ResultCard = ({ verse, onRestart }) => {
                     </div>
                 </div>
 
-                {/* Bottom Action Buttons */}
-                <div className="flex flex-col gap-3 mt-8 w-full max-w-[340px]">
+                {/* Generated Card Image Display */}
+                {cardImageUrl && (
+                    <div className="w-full max-w-[340px] flex flex-col items-center">
+                        <img
+                            src={cardImageUrl}
+                            alt="말씀 카드"
+                            className="w-full h-auto rounded-xl shadow-2xl"
+                            style={{
+                                maxWidth: '340px',
+                                userSelect: 'auto',
+                                WebkitUserSelect: 'auto'
+                            }}
+                        />
+                    </div>
+                )}
+
+                {/* Loading State */}
+                {isGeneratingImage && (
+                    <div className="w-full max-w-[340px] aspect-[9/16] flex flex-col items-center justify-center bg-white/50 backdrop-blur-sm rounded-xl">
+                        <svg className="animate-spin w-12 h-12 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" style={{ color: themeStyle.color }}>
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p className="text-sm font-medium" style={{ color: themeStyle.color }}>카드 생성 중...</p>
+                    </div>
+                )}
+
+                {/* Instructions and Restart Button */}
+                <div className="flex flex-col gap-4 mt-8 w-full max-w-[340px] items-center">
+                    {/* Instruction Text */}
+                    {!isGeneratingImage && cardImageUrl && (
+                        <div className="text-center px-4 py-3 bg-white/70 backdrop-blur-sm rounded-full border border-white/50 shadow-sm">
+                            <p className="text-sm font-medium" style={{ color: themeStyle.color }}>
+                                📱 카드를 꾹 눌러 저장하세요
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Restart Button */}
                     <button
-                        onClick={handleDownload}
-                        disabled={isGeneratingImage}
-                        className="w-full py-4 rounded-xl font-bold text-white transition-all duration-300 transform hover:-translate-y-1 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                        onClick={onRestart}
+                        className="py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2"
                         style={{
-                            backgroundColor: themeStyle.color,
-                            boxShadow: '0 4px 16px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06)',
-                            backdropFilter: 'blur(8px)'
+                            color: themeStyle.color,
+                            backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                            backdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255, 255, 255, 0.5)',
+                            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)'
                         }}
                     >
-                        {isGeneratingImage ? (
-                            <>
-                                <svg className="animate-spin w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                </svg>
-                                생성 중...
-                            </>
-                        ) : (
-                            <>
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                    <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                                </svg>
-                                말씀 카드 저장하기
-                            </>
-                        )}
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
+                        </svg>
+                        다시 뽑기
                     </button>
-
-                    <div className="flex gap-3 w-full">
-                        <button
-                            onClick={handleShare}
-                            disabled={isGeneratingImage}
-                            className="flex-1 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                            style={{
-                                color: themeStyle.color,
-                                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                backdropFilter: 'blur(12px)',
-                                border: '1px solid rgba(255, 255, 255, 0.5)',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)'
-                            }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 100 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186l9.566-5.314m-9.566 7.5l9.566 5.314m0 0a2.25 2.25 0 103.935 2.186 2.25 2.25 0 00-3.935-2.186zm0-12.814a2.25 2.25 0 103.933-2.185 2.25 2.25 0 00-3.933 2.185z" />
-                            </svg>
-                            공유하기
-                        </button>
-                        <button
-                            onClick={onRestart}
-                            disabled={isGeneratingImage}
-                            className="flex-1 py-4 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-0.5 hover:scale-[1.02] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-                            style={{
-                                color: themeStyle.color,
-                                backgroundColor: 'rgba(255, 255, 255, 0.7)',
-                                backdropFilter: 'blur(12px)',
-                                border: '1px solid rgba(255, 255, 255, 0.5)',
-                                boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08), 0 1px 3px rgba(0, 0, 0, 0.05)'
-                            }}
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181 3.183a8.25 8.25 0 0013.803-3.7M4.031 9.865a8.25 8.25 0 0113.803-3.7l3.181 3.182m0-4.991v4.99" />
-                            </svg>
-                            다시 뽑기
-                        </button>
-                    </div>
                 </div>
 
-                <div className="mt-6 text-center">
+                <div className="mt-6 text-center" style={{ userSelect: 'none' }}>
                     <p className="text-gray-500 text-xs mb-2">하루 한 번, 뽑은 말씀대로 살아보기</p>
                     <p className="text-gray-400 text-xs font-light">
                         Developed by <span className="font-medium text-gray-500">@ppaulcasso</span>
@@ -353,42 +247,6 @@ const ResultCard = ({ verse, onRestart }) => {
                 </div>
 
             </div>
-
-            {/* Image Modal for Long-Press Save */}
-            {showImageModal && generatedImageUrl && (
-                <div
-                    className="fixed inset-0 z-[200] bg-black/90 flex flex-col items-center justify-center p-4 animate-fade-in"
-                    onClick={() => {
-                        setShowImageModal(false);
-                        setGeneratedImageUrl(null);
-                    }}
-                >
-                    <div className="text-center mb-4">
-                        <p className="text-white text-lg font-bold mb-2">이미지를 꾹 눌러 저장하세요</p>
-                        <p className="text-white/70 text-sm">탭하면 닫힙니다</p>
-                    </div>
-
-                    <div className="max-w-[90vw] max-h-[70vh] overflow-auto">
-                        <img
-                            src={generatedImageUrl}
-                            alt="말씀 카드"
-                            className="w-full h-auto rounded-lg shadow-2xl"
-                            style={{ maxWidth: '340px' }}
-                        />
-                    </div>
-
-                    <button
-                        onClick={(e) => {
-                            e.stopPropagation();
-                            setShowImageModal(false);
-                            setGeneratedImageUrl(null);
-                        }}
-                        className="mt-6 px-6 py-3 bg-white/20 backdrop-blur-md text-white rounded-full font-semibold hover:bg-white/30 transition-all"
-                    >
-                        닫기
-                    </button>
-                </div>
-            )}
         </>
     );
 };
