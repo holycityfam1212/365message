@@ -41,24 +41,120 @@ const ResultCard = ({ verse, onRestart }) => {
         ? THEME_STYLES[verse.theme]
         : THEME_STYLES['default'];
 
+    // Wait for fonts to load
+    const waitForFonts = () => document.fonts.ready;
+
+    // Create fixed-size capture card (1020×1620px = 3× visible size)
+    const createCaptureCard = () => {
+        const captureDiv = document.createElement('div');
+        captureDiv.style.cssText = `
+            position: absolute;
+            left: -9999px;
+            top: 0;
+            width: 1020px;
+            height: 1620px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: url(${cardFrame});
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.96;
+            filter: brightness(0.98) contrast(0.96);
+        `;
+
+        // Content container
+        const content = document.createElement('div');
+        content.style.cssText = `
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 336px 144px 240px 144px;
+        `;
+
+        // Theme badge
+        const badge = document.createElement('h3');
+        badge.textContent = themeStyle.label;
+        badge.style.cssText = `
+            font-size: 33px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            opacity: 0.9;
+            color: ${themeStyle.color};
+            margin-bottom: 72px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        `;
+
+        // Main verse text
+        const verseText = document.createElement('p');
+        verseText.textContent = verse.text;
+        verseText.style.cssText = `
+            font-family: 'Noto Serif KR', serif;
+            font-weight: 500;
+            font-size: 48px;
+            line-height: 1.5;
+            letter-spacing: -0.08em;
+            color: ${themeStyle.color};
+            text-align: center;
+            word-break: keep-all;
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            margin-bottom: 72px;
+            width: 100%;
+        `;
+
+        // Reference
+        const reference = document.createElement('p');
+        reference.textContent = verse.reference;
+        reference.style.cssText = `
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+            color: ${themeStyle.color};
+            opacity: 0.85;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        `;
+
+        content.appendChild(badge);
+        content.appendChild(verseText);
+        content.appendChild(reference);
+        captureDiv.appendChild(content);
+
+        return captureDiv;
+    };
+
     const handleDownload = async () => {
-        if (cardRef.current) {
-            try {
-                const canvas = await html2canvas(cardRef.current, {
-                    scale: 5, // Higher quality for sharp images
-                    backgroundColor: null,
-                    logging: false,
-                    useCORS: true,
-                    pixelRatio: window.devicePixelRatio,
-                });
-                const link = document.createElement('a');
-                link.download = `2026_Gods_Message_${verse.theme}.png`;
-                link.href = canvas.toDataURL('image/png');
-                link.click();
-            } catch (err) {
-                console.error("Failed to capture image", err);
-                alert("이미지 저장에 실패했습니다.");
-            }
+        try {
+            await waitForFonts();
+
+            const captureCard = createCaptureCard();
+            document.body.appendChild(captureCard);
+
+            // Small delay to ensure rendering
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const canvas = await html2canvas(captureCard, {
+                scale: 2,
+                backgroundColor: null,
+                logging: false,
+                useCORS: true,
+            });
+
+            document.body.removeChild(captureCard);
+
+            const link = document.createElement('a');
+            link.download = `2026_Gods_Message_${verse.theme}.png`;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        } catch (err) {
+            console.error("Failed to capture image", err);
+            alert("이미지 저장에 실패했습니다.");
         }
     };
 
@@ -74,16 +170,23 @@ const ResultCard = ({ verse, onRestart }) => {
             console.error("Tracking Failed", err);
         }
 
-        if (!cardRef.current) return;
-
         try {
-            const canvas = await html2canvas(cardRef.current, {
-                scale: 5,
+            await waitForFonts();
+
+            const captureCard = createCaptureCard();
+            document.body.appendChild(captureCard);
+
+            // Small delay to ensure rendering
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            const canvas = await html2canvas(captureCard, {
+                scale: 2,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
-                pixelRatio: window.devicePixelRatio,
             });
+
+            document.body.removeChild(captureCard);
 
             canvas.toBlob(async (blob) => {
                 if (!blob) return;
