@@ -3,6 +3,7 @@ import GachaMachine from './components/GachaMachine';
 import ResultCard from './components/ResultCard';
 import DataUploader from './components/DataUploader'; // Temp component
 import AdminDashboard from './components/AdminDashboard';
+import CardPreview from './components/CardPreview';
 import { supabase } from './lib/supabase';
 
 // Sound
@@ -16,6 +17,7 @@ function App() {
   // Admin Checks
   const [isAdmin] = useState(window.location.search.includes('admin=true'));
   const [isDashboard] = useState(window.location.search.includes('admin=dashboard'));
+  const [isPreview] = useState(window.location.search.includes('preview=true'));
 
   useEffect(() => {
     // Track Visit
@@ -69,6 +71,7 @@ function App() {
     setDrawnVerse(null);
   };
 
+  if (isPreview) return <CardPreview />;
   if (isDashboard) return <AdminDashboard />;
 
   return (
