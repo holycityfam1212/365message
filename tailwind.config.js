@@ -46,6 +46,7 @@ export default {
                 drop: 'drop 0.5s ease-out forwards',
                 float: 'float 6s ease-in-out infinite',
                 sparkle: 'sparkle 3s ease-in-out infinite',
+                'fade-in': 'fadeIn 0.3s ease-out forwards',
             }
         },
     },
