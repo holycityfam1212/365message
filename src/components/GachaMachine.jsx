@@ -308,14 +308,14 @@ const GachaMachine = ({ onFinish }) => {
                     {/* Dropped Capsule */}
                     {capsuleDropped && (
                         <div
-                            className="absolute bottom-[2%] left-[23%] -translate-x-1/2 z-30 cursor-pointer animate-drop group"
+                            className="absolute bottom-[2%] left-1/2 -translate-x-1/2 z-30 cursor-pointer animate-drop group"
                             onClick={handleCapsuleClick}
                         >
                             <div className="relative">
                                 <img src={capsuleImg} alt="Capsule" className="w-24 h-24 drop-shadow-2xl group-hover:scale-110 transition-all duration-300" />
                                 <div className="absolute inset-0 bg-gradient-to-br from-purple-200/20 to-pink-200/20 rounded-full blur-lg group-hover:blur-xl transition-all"></div>
                             </div>
-                            <div className="absolute -bottom-9 left-[10%] px-4 py-2 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full text-xs font-semibold whitespace-nowrap animate-bounce shadow-md">
+                            <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 px-4 py-2 bg-gradient-to-r from-purple-300 to-pink-300 text-white rounded-full text-xs font-semibold whitespace-nowrap animate-bounce shadow-md">
                                 클릭해서 열어보세요 ✨
                             </div>
                         </div>
