@@ -47,27 +47,41 @@ const ResultCard = ({ verse, onRestart }) => {
         if (!cardRef.current) return;
 
         try {
+            // Detect mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
             // Wait for fonts to be ready
             await document.fonts.ready;
 
-            // Small delay to ensure everything is rendered
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Longer delay for mobile devices
+            await new Promise(resolve => setTimeout(resolve, isMobile ? 500 : 300));
+
+            // Use lower scale on mobile to avoid memory issues
+            const scale = isMobile ? 2 : 4;
 
             const canvas = await html2canvas(cardRef.current, {
-                scale: 4,
+                scale: scale,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
+                scrollY: -window.scrollY,
+                scrollX: -window.scrollX,
+                windowWidth: document.documentElement.scrollWidth,
+                windowHeight: document.documentElement.scrollHeight,
             });
 
+            // Use JPEG for better mobile compatibility (smaller file size)
+            const imageType = isMobile ? 'image/jpeg' : 'image/png';
+            const quality = isMobile ? 0.95 : 1.0;
+
             const link = document.createElement('a');
-            link.download = `2026_Gods_Message_${verse.theme}.png`;
-            link.href = canvas.toDataURL('image/png', 1.0);
+            link.download = `2026_Gods_Message_${verse.theme}.${isMobile ? 'jpg' : 'png'}`;
+            link.href = canvas.toDataURL(imageType, quality);
             link.click();
         } catch (err) {
             console.error("Failed to generate image", err);
-            alert("이미지 저장에 실패했습니다.");
+            alert("이미지 저장에 실패했습니다. 다시 시도해주세요.");
         }
     };
 
@@ -86,46 +100,61 @@ const ResultCard = ({ verse, onRestart }) => {
         if (!cardRef.current) return;
 
         try {
+            // Detect mobile device
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
             // Wait for fonts to be ready
             await document.fonts.ready;
 
-            // Small delay to ensure everything is rendered
-            await new Promise(resolve => setTimeout(resolve, 300));
+            // Longer delay for mobile devices
+            await new Promise(resolve => setTimeout(resolve, isMobile ? 500 : 300));
+
+            // Use lower scale on mobile to avoid memory issues
+            const scale = isMobile ? 2 : 4;
 
             const canvas = await html2canvas(cardRef.current, {
-                scale: 4,
+                scale: scale,
                 backgroundColor: null,
                 logging: false,
                 useCORS: true,
                 allowTaint: true,
+                scrollY: -window.scrollY,
+                scrollX: -window.scrollX,
+                windowWidth: document.documentElement.scrollWidth,
+                windowHeight: document.documentElement.scrollHeight,
             });
+
+            // Use JPEG for better mobile compatibility
+            const imageType = isMobile ? 'image/jpeg' : 'image/png';
+            const quality = isMobile ? 0.95 : 1.0;
 
             canvas.toBlob(async (blob) => {
                 if (!blob) return;
 
-                const file = new File([blob], `2026_Gods_Message_${verse.theme}.png`, { type: 'image/png' });
+                const fileExt = isMobile ? 'jpg' : 'png';
+                const file = new File([blob], `2026_Gods_Message_${verse.theme}.${fileExt}`, { type: imageType });
                 const shareData = {
                     files: [file],
                     title: '2026 내게 주시는 하나님의 말씀',
                 };
 
-                if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                if (navigator.canShare && navigator.canShare(shareData)) {
                     try {
                         await navigator.share(shareData);
                     } catch (err) {
                         if (err.name !== 'AbortError') {
-                            console.log('Error sharing file:', err);
-                            shareLink(); // Fallback
+                            console.log('Share failed:', err);
+                            alert('공유에 실패했습니다. 다시 시도해주세요.');
                         }
                     }
                 } else {
-                    shareLink(); // Fallback
+                    // Fallback: Download the image
+                    alert('이 기기에서는 공유가 지원되지 않습니다. 저장 기능을 이용해주세요.');
                 }
-            }, 'image/png');
-
+            }, imageType, quality);
         } catch (err) {
-            console.error("Share generation failed", err);
-            shareLink();
+            console.error("Failed to generate image for sharing", err);
+            alert("이미지 생성에 실패했습니다. 다시 시도해주세요.");
         }
     };
 

@@ -80,11 +80,15 @@ function App() {
       {isAdmin && <DataUploader />}
 
       {stage === 'home' && (
-        <GachaMachine onFinish={handleGachaFinish} />
+        <div className="animate-fade-in">
+          <GachaMachine onFinish={handleGachaFinish} />
+        </div>
       )}
 
       {stage === 'result' && drawnVerse && (
-        <ResultCard verse={drawnVerse} onRestart={handleRestart} />
+        <div className="animate-fade-in">
+          <ResultCard verse={drawnVerse} onRestart={handleRestart} />
+        </div>
       )}
 
       {/* Debug Version Indicator - Hidden */}

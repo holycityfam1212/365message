@@ -18,18 +18,23 @@ export default {
                 serif: ['"Noto Serif KR"', 'serif'],
             },
             keyframes: {
-                shake: {
-                    '0%, 100%': { transform: 'rotate(0deg)' },
-                    '25%': { transform: 'rotate(5deg)' },
-                    '75%': { transform: 'rotate(-5deg)' },
-                },
-                drop: {
-                    '0%': { transform: 'translateY(-100%)', opacity: '0' },
-                    '100%': { transform: 'translateY(0)', opacity: '1' },
-                },
                 float: {
                     '0%, 100%': { transform: 'translateY(0px)' },
-                    '50%': { transform: 'translateY(-20px)' },
+                    '50%': { transform: 'translateY(-10px)' },
+                },
+                glow: {
+                    '0%': { boxShadow: '0 0 5px rgba(147, 51, 234, 0.5)' },
+                    '100%': { boxShadow: '0 0 20px rgba(147, 51, 234, 0.8)' },
+                },
+                drop: {
+                    '0%': { transform: 'translateY(-300px)', opacity: 0 },
+                    '60%': { transform: 'translateY(10px)', opacity: 1 },
+                    '80%': { transform: 'translateY(-5px)' },
+                    '100%': { transform: 'translateY(0)' },
+                },
+                fadeIn: {
+                    '0%': { opacity: 0, transform: 'scale(0.98)' },
+                    '100%': { opacity: 1, transform: 'scale(1)' },
                 },
                 sparkle: {
                     '0%, 100%': { opacity: '0.2', transform: 'scale(1)' },
