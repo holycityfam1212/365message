@@ -372,6 +372,40 @@ const ResultCard = ({ verse, onRestart }) => {
                 </div>
 
             </div>
+
+            {/* Loading Spinner */}
+            {isGenerating && (
+                <div className="fixed inset-0 z-[100] bg-black/50 flex items-center justify-center backdrop-blur-sm">
+                    <div className="bg-white px-6 py-4 rounded-xl shadow-2xl flex flex-col items-center gap-3">
+                        <div className="w-8 h-8 border-4 border-purple-200 border-t-purple-500 rounded-full animate-spin"></div>
+                        <p className="text-gray-600 font-medium text-sm">카드 만드는 중...</p>
+                    </div>
+                </div>
+            )}
+
+            {/* Image Modal */}
+            {showModal && modalImage && (
+                <div
+                    className="fixed inset-0 z-[90] bg-black/90 flex flex-col items-center justify-center p-6 animate-fade-in"
+                    onClick={() => setShowModal(false)}
+                >
+                    <p className="text-white text-lg font-bold mb-4 bg-black/50 px-4 py-2 rounded-full animate-bounce">
+                        이미지를 길게 눌러 저장하세요 📥
+                    </p>
+                    <img
+                        src={modalImage}
+                        alt="Generated Card"
+                        className="max-h-[70vh] w-auto rounded-lg shadow-2xl"
+                        onClick={(e) => e.stopPropagation()} // Prevent closing when clicking image
+                    />
+                    <button
+                        className="mt-6 text-white/80 underline text-sm"
+                        onClick={() => setShowModal(false)}
+                    >
+                        닫기
+                    </button>
+                </div>
+            )}
         </>
     );
 };
