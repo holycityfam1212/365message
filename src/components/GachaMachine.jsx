@@ -10,11 +10,7 @@ import capsuleImg from '../assets/capsule.png';
 import logoImg from '../assets/logo.png';
 import gachaBg from '../assets/gacha_bg.png';
 
-// Sounds
-import coinSound from '../assets/sounds/coin.mp3';
-import crankSound from '../assets/sounds/crank.mp3';
-import dropSound from '../assets/sounds/drop.mp3';
-import openSound from '../assets/sounds/open.mp3';
+// Sounds are now generated using Web Audio API
 
 const GachaMachine = ({ onFinish }) => {
     // 리렌더링 없는 상태 관리를 위해 useRef 사용
@@ -23,20 +19,156 @@ const GachaMachine = ({ onFinish }) => {
     const [hasCoin, setHasCoin] = useState(false);
     const [isSpinning, setIsSpinning] = useState(false);
     const [capsuleDropped, setCapsuleDropped] = useState(false);
+    const [coinInserted, setCoinInserted] = useState(false);
 
     const coinRef = useRef(null);
     const dropZoneRef = useRef(null);
     const dragStartPosRef = useRef({ offsetX: 0, offsetY: 0, startLeft: 0, startTop: 0 });
 
-    // Audio Helpers
-    const playSound = (src, volume = 0.5) => {
-        try {
-            const audio = new Audio(src);
-            audio.volume = volume;
-            audio.play().catch(e => console.log("Audio play failed", e));
-        } catch (e) {
-            console.error(e);
+    // Web Audio API Sound Generators
+    const audioContext = useRef(null);
+
+    // Initialize AudioContext on first user interaction
+    const initAudio = () => {
+        if (!audioContext.current) {
+            audioContext.current = new (window.AudioContext || window.webkitAudioContext)();
         }
+        return audioContext.current;
+    };
+
+    // Generate coin sound (metallic clink)
+    const playCoinSound = (volume = 0.6) => {
+        const ctx = initAudio();
+        const now = ctx.currentTime;
+
+        // Create oscillators for metallic sound
+        const osc1 = ctx.createOscillator();
+        const osc2 = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc1.type = 'sine';
+        osc2.type = 'sine';
+        osc1.frequency.setValueAtTime(800, now);
+        osc2.frequency.setValueAtTime(1200, now);
+
+        // Quick decay for clink effect
+        gainNode.gain.setValueAtTime(volume, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + 0.1);
+
+        osc1.connect(gainNode);
+        osc2.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc1.start(now);
+        osc2.start(now);
+        osc1.stop(now + 0.1);
+        osc2.stop(now + 0.1);
+    };
+
+    // Generate drumbeat sound (두구두구)
+    const playCrankSound = (volume = 0.5) => {
+        const ctx = initAudio();
+        const now = ctx.currentTime;
+
+        // Create a drumbeat pattern: boom-boom-boom (3 beats)
+        const beatTimes = [0, 0.3, 0.6, 0.9]; // 4 beats over 1.2s
+
+        beatTimes.forEach((time) => {
+            // Bass drum (low frequency)
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(80, now + time);
+            osc.frequency.exponentialRampToValueAtTime(40, now + time + 0.1);
+
+            gainNode.gain.setValueAtTime(volume * 0.8, now + time);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, now + time + 0.2);
+
+            osc.connect(gainNode);
+            gainNode.connect(ctx.destination);
+
+            osc.start(now + time);
+            osc.stop(now + time + 0.2);
+
+            // Add some noise for drum texture
+            const bufferSize = ctx.sampleRate * 0.1;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * 0.2;
+            }
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const noiseGain = ctx.createGain();
+            noiseGain.gain.setValueAtTime(volume * 0.3, now + time);
+            noiseGain.gain.exponentialRampToValueAtTime(0.01, now + time + 0.1);
+
+            noise.connect(noiseGain);
+            noiseGain.connect(ctx.destination);
+
+            noise.start(now + time);
+            noise.stop(now + time + 0.1);
+        });
+    };
+
+    // Generate drop sound (descending tone)
+    const playDropSound = (volume = 0.6) => {
+        const ctx = initAudio();
+        const now = ctx.currentTime;
+        const duration = 0.4;
+
+        const osc = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(600, now);
+        osc.frequency.exponentialRampToValueAtTime(200, now + duration);
+
+        gainNode.gain.setValueAtTime(volume, now);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, now + duration);
+
+        osc.connect(gainNode);
+        gainNode.connect(ctx.destination);
+
+        osc.start(now);
+        osc.stop(now + duration);
+    };
+
+    // Generate bell sound (새해 종소리)
+    const playOpenSound = (volume = 0.6) => {
+        const ctx = initAudio();
+        const now = ctx.currentTime;
+
+        // Bell frequencies - lower tones for a deeper bell sound
+        const fundamentals = [261.63, 329.63]; // C4, E4 for harmonious bell
+        const harmonics = [2, 3, 4.2, 5.4]; // Harmonic ratios for bell timbre
+
+        fundamentals.forEach((fundamental, bellIndex) => {
+            const delay = bellIndex * 0.4; // Stagger the two bell strikes
+
+            harmonics.forEach((harmonic, idx) => {
+                const osc = ctx.createOscillator();
+                const gainNode = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(fundamental * harmonic, now + delay);
+
+                // Each harmonic has different decay rate
+                const harmonicVolume = volume / (idx + 1) * 0.3;
+                gainNode.gain.setValueAtTime(harmonicVolume, now + delay);
+                gainNode.gain.exponentialRampToValueAtTime(0.001, now + delay + 2.0 + idx * 0.5);
+
+                osc.connect(gainNode);
+                gainNode.connect(ctx.destination);
+
+                osc.start(now + delay);
+                osc.stop(now + delay + 3.0);
+            });
+        });
     };
 
     const handleSpin = () => {
@@ -44,7 +176,7 @@ const GachaMachine = ({ onFinish }) => {
         setIsSpinning(true);
 
         // 핸들이 돌아가는 기계음
-        playSound(crankSound, 0.5);
+        playCrankSound(0.5);
 
         // Stop spinning after 1.5s and drop capsule
         setTimeout(() => {
@@ -52,7 +184,7 @@ const GachaMachine = ({ onFinish }) => {
             setCapsuleDropped(true);
 
             // 캡슐이 떨어지는 소리
-            playSound(dropSound, 0.6);
+            playDropSound(0.6);
         }, 1500);
     };
 
@@ -129,7 +261,7 @@ const GachaMachine = ({ onFinish }) => {
         ) {
             // Success Drop
             setHasCoin(true);
-            playSound(coinSound, 0.6);
+            playCoinSound(0.6);
 
             if (coinRef.current) {
                 coinRef.current.style.transition = 'all 0.5s ease-out';
@@ -139,9 +271,20 @@ const GachaMachine = ({ onFinish }) => {
                 coinRef.current.style.cursor = 'grab';
             }
 
+            // 먼저 핸들 회전 시작 (400ms 후)
             setTimeout(() => {
                 handleSpin();
-            }, 800);
+            }, 400);
+
+            // 그 다음 흔들림 시작 (700ms 후)
+            setTimeout(() => {
+                setCoinInserted(true);
+            }, 700);
+
+            // 흔들림 효과 1.2초 후 종료
+            setTimeout(() => {
+                setCoinInserted(false);
+            }, 1900);
         } else {
             // Revert Coin
             if (coinRef.current) {
@@ -189,7 +332,7 @@ const GachaMachine = ({ onFinish }) => {
         if (!capsuleDropped) return;
 
         // 캡슐이 열리며 말씀이 등장하는 소리
-        playSound(openSound, 0.6);
+        playOpenSound(0.6);
 
         // Open result
         const verse = drawVerse();
@@ -283,7 +426,7 @@ const GachaMachine = ({ onFinish }) => {
                         <img
                             src={machineImg}
                             alt="Gacha Machine"
-                            className={`w-full h-auto block relative z-10 transition-all duration-300 drop-shadow-2xl ${isSpinning ? 'animate-shake' : ''}`}
+                            className={`w-full h-auto block relative z-10 transition-all duration-300 drop-shadow-2xl ${isSpinning || coinInserted ? 'animate-shake' : ''}`}
                         />
                         {/* Subtle glow effect when ready */}
                         {!hasCoin && !isSpinning && !capsuleDropped && (
